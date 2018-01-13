@@ -15,7 +15,6 @@
 		9504C0901C662CBF00352520 /* ConfigWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9504C08F1C662CBF00352520 /* ConfigWindowController.m */; };
 		9504C0C11C662D9400352520 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9504C0C01C662D9400352520 /* libz.tbd */; };
 		9504C0C91C662DB500352520 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9504C0C81C662DB500352520 /* main.m */; };
-		9504C0CF1C662DE300352520 /* v2rayx_sysconf in Resources */ = {isa = PBXBuildFile; fileRef = 9504C0C61C662DB400352520 /* v2rayx_sysconf */; };
 		9504C0D11C66373400352520 /* install_helper.sh in Resources */ = {isa = PBXBuildFile; fileRef = 9504C0D01C662E0800352520 /* install_helper.sh */; };
 		9504C0D41C66511B00352520 /* ServerProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 9504C0D31C66511B00352520 /* ServerProfile.m */; };
 		950F82321D9C01820066CB3A /* config-sample-rules.plist in Resources */ = {isa = PBXBuildFile; fileRef = 950F82311D9C01820066CB3A /* config-sample-rules.plist */; };
@@ -42,17 +41,8 @@
 		9D7109611E0F43BD008A6362 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 9D7109601E0F43BD008A6362 /* Credits.rtf */; };
 		9D7DFE541EBEC947001FECBD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D7DFE531EBEC947001FECBD /* main.m */; };
 		9DB4FE951F205BEB00CCEE5F /* config-sample.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9DB4FE941F205BEB00CCEE5F /* config-sample.plist */; };
+		CE04245E200A6CA600CD2590 /* v2rayx_sysconf in Resources */ = {isa = PBXBuildFile; fileRef = CE04245D200A6CA600CD2590 /* v2rayx_sysconf */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		9504C0CD1C662DC500352520 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9504C0701C662C3000352520 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 9504C0C51C662DB400352520;
-			remoteInfo = v2rayx_sysconf;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		9504C0C41C662DB400352520 /* CopyFiles */ = {
@@ -134,6 +124,7 @@
 		9D7DFE511EBEC947001FECBD /* jsonplist */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = jsonplist; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D7DFE531EBEC947001FECBD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9DB4FE941F205BEB00CCEE5F /* config-sample.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "config-sample.plist"; sourceTree = "<group>"; };
+		CE04245D200A6CA600CD2590 /* v2rayx_sysconf */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = v2rayx_sysconf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -211,6 +202,7 @@
 				950F82311D9C01820066CB3A /* config-sample-rules.plist */,
 				9DB4FE941F205BEB00CCEE5F /* config-sample.plist */,
 				95E524CA1C674CC80008BB12 /* simple.pac */,
+				CE04245D200A6CA600CD2590 /* v2rayx_sysconf */,
 				9504C0D01C662E0800352520 /* install_helper.sh */,
 				953B60551DB3F65A00D40654 /* dlcore.sh */,
 				9D5EAC111FDCD54F00C14B46 /* v2ray-core */,
@@ -332,7 +324,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				9504C0CE1C662DC500352520 /* PBXTargetDependency */,
 			);
 			name = V2RayX;
 			productName = V2RayX;
@@ -426,8 +417,8 @@
 				9DB4FE951F205BEB00CCEE5F /* config-sample.plist in Resources */,
 				950F82321D9C01820066CB3A /* config-sample-rules.plist in Resources */,
 				95E524CB1C674CC80008BB12 /* simple.pac in Resources */,
+				CE04245E200A6CA600CD2590 /* v2rayx_sysconf in Resources */,
 				9504C0D11C66373400352520 /* install_helper.sh in Resources */,
-				9504C0CF1C662DE300352520 /* v2rayx_sysconf in Resources */,
 				9504C0821C662C3000352520 /* Assets.xcassets in Resources */,
 				9D7109611E0F43BD008A6362 /* Credits.rtf in Resources */,
 				9504C0851C662C3000352520 /* MainMenu.xib in Resources */,
@@ -496,14 +487,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		9504C0CE1C662DC500352520 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 9504C0C51C662DB400352520 /* v2rayx_sysconf */;
-			targetProxy = 9504C0CD1C662DC500352520 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		9504C0831C662C3000352520 /* MainMenu.xib */ = {
