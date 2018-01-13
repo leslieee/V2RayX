@@ -36,7 +36,6 @@
 		95E524CB1C674CC80008BB12 /* simple.pac in Resources */ = {isa = PBXBuildFile; fileRef = 95E524CA1C674CC80008BB12 /* simple.pac */; };
 		9D5EAC151FDCD70300C14B46 /* geoip.dat in Resources */ = {isa = PBXBuildFile; fileRef = 9D5EAC101FDCD54700C14B46 /* geoip.dat */; };
 		9D5EAC161FDCD70300C14B46 /* geosite.dat in Resources */ = {isa = PBXBuildFile; fileRef = 9D5EAC0F1FDCD54600C14B46 /* geosite.dat */; };
-		9D5EAC171FDCD70300C14B46 /* v2ctl in Resources */ = {isa = PBXBuildFile; fileRef = 9D5EAC0E1FDCD54600C14B46 /* v2ctl */; };
 		9D5EAC181FDCD70300C14B46 /* v2ray in Resources */ = {isa = PBXBuildFile; fileRef = 953B60571DB3F6B700D40654 /* v2ray */; };
 		9D7109611E0F43BD008A6362 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 9D7109601E0F43BD008A6362 /* Credits.rtf */; };
 		9D7DFE541EBEC947001FECBD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D7DFE531EBEC947001FECBD /* main.m */; };
@@ -117,7 +116,6 @@
 		95862BD41DB2862E00F4A9CA /* compilefromsource.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = compilefromsource.sh; sourceTree = "<group>"; };
 		95A143CA1C87FC6E008756B9 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		95E524CA1C674CC80008BB12 /* simple.pac */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = simple.pac; sourceTree = "<group>"; };
-		9D5EAC0E1FDCD54600C14B46 /* v2ctl */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = v2ctl; path = "v2ray-core-bin/v2ctl"; sourceTree = SOURCE_ROOT; };
 		9D5EAC0F1FDCD54600C14B46 /* geosite.dat */ = {isa = PBXFileReference; lastKnownFileType = file; name = geosite.dat; path = "v2ray-core-bin/geosite.dat"; sourceTree = SOURCE_ROOT; };
 		9D5EAC101FDCD54700C14B46 /* geoip.dat */ = {isa = PBXFileReference; lastKnownFileType = file; name = geoip.dat; path = "v2ray-core-bin/geoip.dat"; sourceTree = SOURCE_ROOT; };
 		9D7109601E0F43BD008A6362 /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
@@ -295,7 +293,6 @@
 			children = (
 				9D5EAC101FDCD54700C14B46 /* geoip.dat */,
 				9D5EAC0F1FDCD54600C14B46 /* geosite.dat */,
-				9D5EAC0E1FDCD54600C14B46 /* v2ctl */,
 				953B60571DB3F6B700D40654 /* v2ray */,
 			);
 			name = "v2ray-core";
@@ -412,7 +409,6 @@
 			files = (
 				9D5EAC151FDCD70300C14B46 /* geoip.dat in Resources */,
 				9D5EAC161FDCD70300C14B46 /* geosite.dat in Resources */,
-				9D5EAC171FDCD70300C14B46 /* v2ctl in Resources */,
 				9D5EAC181FDCD70300C14B46 /* v2ray in Resources */,
 				9DB4FE951F205BEB00CCEE5F /* config-sample.plist in Resources */,
 				950F82321D9C01820066CB3A /* config-sample-rules.plist in Resources */,
