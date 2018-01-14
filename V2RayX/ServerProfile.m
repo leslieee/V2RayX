@@ -13,19 +13,19 @@
 - (ServerProfile*)init {
     self = [super init];
     if (self) {
-        [self setAddress:@"server.cc"];
-        [self setPort:10086];
+        [self setAddress:@"cn2.speedss.ml"];
+        [self setPort:443];
         [self setUserId:@"00000000-0000-0000-0000-000000000000"];
         [self setAlterId:64];
         [self setLevel:0];
-        [self setRemark:@"test server"];
+        [self setRemark:@"speedss.ml"];
         [self setSecurity:aes_128_cfb];
         [self setNetwork:tcp];
         [self setSendThrough:@"0.0.0.0"];
         [self setStreamSettings:@{
-                                  @"security": @"none",
+                                  @"security": @"tls",
                                   @"tlsSettings": @{
-                                          @"serverName": @"server.cc",
+                                          @"serverName": @"",
                                           @"allowInsecure": [NSNumber numberWithBool:NO]
                                           },
                                   @"tcpSettings": @{
@@ -46,11 +46,9 @@
                                                   }
                                           },
                                   @"wsSettings": @{
-                                          @"path": @"",
-                                          @"headers": @{
-                                                  @"Host": @"server.cc"
-                                                  }
-                                          }
+										  @"connectionReuse": [NSNumber numberWithBool:1],
+										  @"path": @"/v2ray/"
+										  }
                                   }];
         [self setProxySettings:@{@"address": @"", @"port": @0}];
         [self setMuxSettings:@{
@@ -74,7 +72,7 @@
     profile.address = nilCoalescing(outDict[@"settings"][@"vnext"][0][@"address"], @"127.0.0.1");
     profile.remark = nilCoalescing(outDict[@"settings"][@"vnext"][0][@"remark"], @"");
     profile.port = [outDict[@"settings"][@"vnext"][0][@"port"] unsignedIntegerValue];
-    profile.userId = nilCoalescing(outDict[@"settings"][@"vnext"][0][@"users"][0][@"id"], @"23ad6b10-8d1a-40f7-8ad0-e3e35cd38287");
+    profile.userId = nilCoalescing(outDict[@"settings"][@"vnext"][0][@"users"][0][@"id"], @"00000000-0000-0000-0000-000000000000");
     
     profile.alterId = [outDict[@"settings"][@"vnext"][0][@"users"][0][@"alterId"] unsignedIntegerValue];
     profile.level = [outDict[@"settings"][@"vnext"][0][@"users"][0][@"level"] unsignedIntegerValue];
