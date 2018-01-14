@@ -36,7 +36,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="492" height="246"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="778"/>
             <view key="contentView" wantsLayer="YES" id="EiT-Mj-1SZ">
                 <rect key="frame" x="0.0" y="0.0" width="492" height="246"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -47,7 +47,7 @@
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
                             <tabViewItem label="KCP" identifier="1" id="jR2-p0-bjc">
-                                <view key="view" ambiguous="YES" id="GiR-b0-lvV">
+                                <view key="view" id="GiR-b0-lvV">
                                     <rect key="frame" x="10" y="33" width="446" height="135"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
@@ -365,7 +365,7 @@
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Outbound Proxy" identifier="" id="5DZ-L5-J0p">
-                                <view key="view" id="cPu-Oz-q0e">
+                                <view key="view" ambiguous="YES" id="cPu-Oz-q0e">
                                     <rect key="frame" x="10" y="33" width="446" height="135"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>

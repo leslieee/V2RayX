@@ -41,6 +41,10 @@
 		9D7DFE541EBEC947001FECBD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D7DFE531EBEC947001FECBD /* main.m */; };
 		9DB4FE951F205BEB00CCEE5F /* config-sample.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9DB4FE941F205BEB00CCEE5F /* config-sample.plist */; };
 		CE04245E200A6CA600CD2590 /* v2rayx_sysconf in Resources */ = {isa = PBXBuildFile; fileRef = CE04245D200A6CA600CD2590 /* v2rayx_sysconf */; };
+		CE042462200AAE6700CD2590 /* LoginWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE042460200AAE6700CD2590 /* LoginWindowController.m */; };
+		CE042463200AAE6700CD2590 /* LoginWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE042461200AAE6700CD2590 /* LoginWindowController.xib */; };
+		CE7AA0BC200B5A8F00ECF0F4 /* NSDictionary+Json.m in Sources */ = {isa = PBXBuildFile; fileRef = CE7AA0BA200B5A8F00ECF0F4 /* NSDictionary+Json.m */; };
+		CE7AA0BE200B7C4100ECF0F4 /* v2ctl in Resources */ = {isa = PBXBuildFile; fileRef = CE7AA0BD200B7C4100ECF0F4 /* v2ctl */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -123,6 +127,12 @@
 		9D7DFE531EBEC947001FECBD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9DB4FE941F205BEB00CCEE5F /* config-sample.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "config-sample.plist"; sourceTree = "<group>"; };
 		CE04245D200A6CA600CD2590 /* v2rayx_sysconf */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = v2rayx_sysconf; sourceTree = "<group>"; };
+		CE04245F200AAE6700CD2590 /* LoginWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LoginWindowController.h; sourceTree = "<group>"; };
+		CE042460200AAE6700CD2590 /* LoginWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LoginWindowController.m; sourceTree = "<group>"; };
+		CE042461200AAE6700CD2590 /* LoginWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LoginWindowController.xib; sourceTree = "<group>"; };
+		CE7AA0BA200B5A8F00ECF0F4 /* NSDictionary+Json.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+Json.m"; sourceTree = "<group>"; };
+		CE7AA0BB200B5A8F00ECF0F4 /* NSDictionary+Json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+Json.h"; sourceTree = "<group>"; };
+		CE7AA0BD200B7C4100ECF0F4 /* v2ctl */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = v2ctl; path = "../v2ray-core-bin/v2ctl"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -177,15 +187,19 @@
 		9504C07A1C662C3000352520 /* V2RayX */ = {
 			isa = PBXGroup;
 			children = (
+				CE7AA0B9200B5A7E00ECF0F4 /* Library */,
 				9577E1921C6B065D00093BD3 /* GCDWebServer */,
 				9504C07B1C662C3000352520 /* AppDelegate.h */,
 				9504C07C1C662C3000352520 /* AppDelegate.m */,
 				9504C0811C662C3000352520 /* Assets.xcassets */,
 				9504C0831C662C3000352520 /* MainMenu.xib */,
-				9504C08C1C662C9100352520 /* ConfigWindow.xib */,
-				9565E28A1DB25C010082658C /* transportWindow.xib */,
 				9504C08E1C662CBF00352520 /* ConfigWindowController.h */,
 				9504C08F1C662CBF00352520 /* ConfigWindowController.m */,
+				9504C08C1C662C9100352520 /* ConfigWindow.xib */,
+				9565E28A1DB25C010082658C /* transportWindow.xib */,
+				CE04245F200AAE6700CD2590 /* LoginWindowController.h */,
+				CE042460200AAE6700CD2590 /* LoginWindowController.m */,
+				CE042461200AAE6700CD2590 /* LoginWindowController.xib */,
 				9504C0D21C66511B00352520 /* ServerProfile.h */,
 				9504C0D31C66511B00352520 /* ServerProfile.m */,
 				9504C0861C662C3000352520 /* Info.plist */,
@@ -293,6 +307,7 @@
 			children = (
 				9D5EAC101FDCD54700C14B46 /* geoip.dat */,
 				9D5EAC0F1FDCD54600C14B46 /* geosite.dat */,
+				CE7AA0BD200B7C4100ECF0F4 /* v2ctl */,
 				953B60571DB3F6B700D40654 /* v2ray */,
 			);
 			name = "v2ray-core";
@@ -304,6 +319,15 @@
 				9D7DFE531EBEC947001FECBD /* main.m */,
 			);
 			path = jsonplist;
+			sourceTree = "<group>";
+		};
+		CE7AA0B9200B5A7E00ECF0F4 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				CE7AA0BB200B5A8F00ECF0F4 /* NSDictionary+Json.h */,
+				CE7AA0BA200B5A8F00ECF0F4 /* NSDictionary+Json.m */,
+			);
+			path = Library;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -419,7 +443,9 @@
 				9D7109611E0F43BD008A6362 /* Credits.rtf in Resources */,
 				9504C0851C662C3000352520 /* MainMenu.xib in Resources */,
 				9565E28B1DB25C010082658C /* transportWindow.xib in Resources */,
+				CE7AA0BE200B7C4100ECF0F4 /* v2ctl in Resources */,
 				9504C08D1C662C9100352520 /* ConfigWindow.xib in Resources */,
+				CE042463200AAE6700CD2590 /* LoginWindowController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -447,6 +473,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9504C0901C662CBF00352520 /* ConfigWindowController.m in Sources */,
+				CE7AA0BC200B5A8F00ECF0F4 /* NSDictionary+Json.m in Sources */,
 				9577E1B81C6B065E00093BD3 /* GCDWebServerFileRequest.m in Sources */,
 				9577E1BE1C6B065E00093BD3 /* GCDWebServerStreamedResponse.m in Sources */,
 				9504C0801C662C3000352520 /* main.m in Sources */,
@@ -455,6 +482,7 @@
 				9577E1B71C6B065E00093BD3 /* GCDWebServerDataRequest.m in Sources */,
 				9577E1BC1C6B065E00093BD3 /* GCDWebServerErrorResponse.m in Sources */,
 				9577E1BD1C6B065E00093BD3 /* GCDWebServerFileResponse.m in Sources */,
+				CE042462200AAE6700CD2590 /* LoginWindowController.m in Sources */,
 				9577E1B31C6B065E00093BD3 /* GCDWebServerConnection.m in Sources */,
 				9504C07D1C662C3000352520 /* AppDelegate.m in Sources */,
 				9577E1B51C6B065E00093BD3 /* GCDWebServerRequest.m in Sources */,

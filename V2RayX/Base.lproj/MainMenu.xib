@@ -17,7 +17,6 @@
                 <outlet property="enabelV2rayItem" destination="I9I-uu-xak" id="b3P-ct-RqE"/>
                 <outlet property="globalModeItem" destination="12u-76-Ytb" id="RA8-m2-Iv6"/>
                 <outlet property="manualModeItem" destination="P4q-kj-6fs" id="5XH-9p-w3e"/>
-                <outlet property="pacModeItem" destination="Cm9-3e-L2z" id="TlL-GV-776"/>
                 <outlet property="serverListMenu" destination="pPD-dn-4h0" id="6sH-L6-Uzx"/>
                 <outlet property="serversItem" destination="3wi-Co-2Kd" id="kKi-8l-dDJ"/>
                 <outlet property="statusBarMenu" destination="yZm-2L-r3v" id="3iW-vb-TOn"/>
@@ -694,12 +693,6 @@
                         <action selector="chooseV2rayRules:" target="Voe-Tx-rLC" id="D4f-2N-1Dq"/>
                     </connections>
                 </menuItem>
-                <menuItem title="PAC Mode" id="Cm9-3e-L2z">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="choosePacMode:" target="Voe-Tx-rLC" id="0yC-jW-pRH"/>
-                    </connections>
-                </menuItem>
                 <menuItem title="Global Mode" id="12u-76-Ytb">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
@@ -713,6 +706,12 @@
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="A8t-NG-v92"/>
+                <menuItem title="Login to speedss.ml" id="lh0-nG-dZK">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="loginToSpeedss:" target="Voe-Tx-rLC" id="2FX-BY-Yg4"/>
+                    </connections>
+                </menuItem>
                 <menuItem title="Servers" id="3wi-Co-2Kd">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Servers" id="eqU-gH-G4L"/>
@@ -723,18 +722,6 @@
                         <action selector="showConfigWindow:" target="Voe-Tx-rLC" id="jVU-tA-mPz"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Edit pac file" id="3NY-51-bgh">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="editPac:" target="Voe-Tx-rLC" id="4jX-Hv-SpU"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="View log" id="5Vg-qU-2V2">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="viewLog:" target="Voe-Tx-rLC" id="6j0-df-F3G"/>
-                    </connections>
-                </menuItem>
                 <menuItem isSeparatorItem="YES" id="1ve-pA-4fu"/>
                 <menuItem title="Copy HTTP Proxy Shell Export Line" id="2fK-AZ-akH">
                     <modifierMask key="keyEquivalentModifierMask"/>
@@ -743,12 +730,6 @@
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="YAD-DW-T91"/>
-                <menuItem title="Help" id="Yq1-i5-ecF">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="showHelp:" target="Voe-Tx-rLC" id="S0S-9o-8U5"/>
-                    </connections>
-                </menuItem>
                 <menuItem title="About" id="esg-xy-8ve">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>

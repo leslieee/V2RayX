@@ -61,6 +61,7 @@ typedef enum ProxyMode : NSInteger{
 - (IBAction)showConfigWindow:(id)sender;
 - (IBAction)editPac:(id)sender;
 - (IBAction)viewLog:(id)sender;
+- (IBAction)loginToSpeedss:(id)sender;
 
 - (void)configurationDidChange;
 - (NSString*)logDirPath;

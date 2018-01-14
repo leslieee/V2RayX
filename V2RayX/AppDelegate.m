@@ -11,10 +11,12 @@
 #import "ConfigWindowController.h"
 #import <SystemConfiguration/SystemConfiguration.h>
 #import "ServerProfile.h"
+#import "LoginWindowController.h"
 
 @interface AppDelegate () {
     GCDWebServer *webServer;
     ConfigWindowController *configWindowController;
+	LoginWindowController *loginWindowController;
 
     dispatch_queue_t taskQueue;
     dispatch_source_t dispatchPacSource;
@@ -29,6 +31,11 @@ static AppDelegate *appDelegate;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     // create a serial queue used for NSTask operations
+	
+	NSArray *path = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+	NSString *folder = [path objectAtIndex:0];
+	NSLog(@"Your NSUserDefaults are stored in this folder: %@/Preferences", folder);
+	
     taskQueue = dispatch_queue_create("cenmrev.v2rayx.nstask", DISPATCH_QUEUE_SERIAL);
     
     if (![self installHelper]) {
@@ -73,14 +80,25 @@ static AppDelegate *appDelegate;
     }];
     NSNumber* setingVersion = [[NSUserDefaults standardUserDefaults] objectForKey:@"setingVersion"];
     if(setingVersion == nil || [setingVersion integerValue] != kV2RayXSettingVersion) {
-        NSAlert *noServerAlert = [[NSAlert alloc] init];
-        [noServerAlert setMessageText:@"If you are running V2RayX for the first time, ignore this message. \nSorry, unknown settings!\nAll V2RayX settings will be reset."];
-        [noServerAlert runModal];
+        // NSAlert *noServerAlert = [[NSAlert alloc] init];
+        // [noServerAlert setMessageText:@"If you are running V2RayX for the first time, ignore this message. \nSorry, unknown settings!\nAll V2RayX settings will be reset."];
+        // [noServerAlert runModal];
+		// 先把旧版配置清理一遍
+		runCommandLine(@"/usr/bin/defaults", @[@"delete", @"cenmrev.V2RayX"]);
         [self writeDefaultSettings]; //explicitly write default settings to user defaults file
     }
     profiles = [[NSMutableArray alloc] init];
     [self readDefaults];
     [self configurationDidChange];
+	
+	// 弹出登录框
+	if (![[NSUserDefaults standardUserDefaults] boolForKey:@"is_login"]) {
+		loginWindowController =[[LoginWindowController alloc] initWithWindowNibName:@"LoginWindowController"];
+		loginWindowController.appDelegate = self;
+		[loginWindowController showWindow:self];
+		[NSApp activateIgnoringOtherApps:YES];
+		[loginWindowController.window makeKeyAndOrderFront:nil];
+	}
     
     //https://randexdev.com/2012/03/how-to-detect-directory-changes-using-gcd/
     int fildes = open([pacPath cStringUsingEncoding:NSUTF8StringEncoding], O_RDONLY);
@@ -95,6 +113,8 @@ static AppDelegate *appDelegate;
 }
 
 - (void) writeDefaultSettings {
+	ServerProfile *defaultProfile = [[ServerProfile alloc] init];
+	defaultProfile.network = 2;
     NSDictionary *defaultSettings =
     @{
       @"setingVersion": [NSNumber numberWithInteger:kV2RayXSettingVersion],
@@ -108,12 +128,13 @@ static AppDelegate *appDelegate;
       @"shareOverLan": [NSNumber numberWithBool:NO],
       @"dnsString": @"localhost",
       @"profiles":@[
-              [[[ServerProfile alloc] init] outboundProfile]
+              [defaultProfile outboundProfile]
               ],
       };
     for (NSString* key in [defaultSettings allKeys]) {
         [[NSUserDefaults standardUserDefaults] setObject:defaultSettings[key] forKey:key];
     }
+	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (NSData*) pacData {
@@ -150,6 +171,7 @@ static AppDelegate *appDelegate;
     for (NSString* key in [settings allKeys]) {
         [[NSUserDefaults standardUserDefaults] setObject:settings[key] forKey:key];
     }
+	[[NSUserDefaults standardUserDefaults] synchronize];
     NSLog(@"Settings saved.");
     //turn off proxy
     if (proxyState && proxyMode != 3) {
@@ -206,6 +228,14 @@ static AppDelegate *appDelegate;
     [[NSWorkspace sharedWorkspace] openFile:logDirPath];
 }
 
+- (IBAction)loginToSpeedss:(id)sender{
+	loginWindowController =[[LoginWindowController alloc] initWithWindowNibName:@"LoginWindowController"];
+	loginWindowController.appDelegate = self;
+	[loginWindowController showWindow:self];
+	[NSApp activateIgnoringOtherApps:YES];
+	[loginWindowController.window makeKeyAndOrderFront:nil];
+}
+
 - (void)updateMenus {
     if (proxyState) {
         [_v2rayStatusItem setTitle:@"V2Ray: On"];
@@ -252,6 +282,7 @@ static AppDelegate *appDelegate;
 - (void)switchServer:(id)sender {
     selectedServerIndex = [sender tag];
     [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInteger:selectedServerIndex] forKey:@"selectedServerIndex"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
     [self configurationDidChange];
 }
 
