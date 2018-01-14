@@ -98,6 +98,16 @@
     appDelegate.dnsString = dnsStr;
     appDelegate.logLevel = _logLevelButton.selectedItem.title;
     appDelegate.selectedServerIndex = _selectedServerIndex;
+	
+	// 保存配置到userdefaults
+	NSMutableArray* profilesArray = [[NSMutableArray alloc] init];
+	for (ServerProfile* p in profiles) {
+		[profilesArray addObject:[p outboundProfile]];
+	}
+	[[NSUserDefaults standardUserDefaults] setObject:profilesArray forKey:@"profiles"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	NSLog(@"Settings saved.");
+	
     [appDelegate configurationDidChange];
     [[self window] close];
 }
