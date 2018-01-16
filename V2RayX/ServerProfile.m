@@ -13,12 +13,12 @@
 - (ServerProfile*)init {
     self = [super init];
     if (self) {
-        [self setAddress:@"cn2.speedss.ml"];
+        [self setAddress:@"cn2.speedss.top"];
         [self setPort:443];
         [self setUserId:@"00000000-0000-0000-0000-000000000000"];
         [self setAlterId:64];
         [self setLevel:0];
-        [self setRemark:@"speedss.ml"];
+        [self setRemark:@"speedss.top"];
         [self setSecurity:aes_128_cfb];
         [self setNetwork:tcp];
         [self setSendThrough:@"0.0.0.0"];

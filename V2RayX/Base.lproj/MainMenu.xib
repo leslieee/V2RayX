@@ -706,7 +706,7 @@
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="A8t-NG-v92"/>
-                <menuItem title="Login to speedss.ml" id="lh0-nG-dZK">
+                <menuItem title="Login to speedss.top" id="lh0-nG-dZK">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="loginToSpeedss:" target="Voe-Tx-rLC" id="2FX-BY-Yg4"/>

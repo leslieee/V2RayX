@@ -45,7 +45,7 @@
 	}
 	// 发送请求
 	NSURL *url=[NSURL URLWithString:[NSString stringWithFormat:
-		@"https://speedss.ml/getandroidserverconfig?email=%@&passwd=%@", email, passwd]];
+		@"https://speedss.top/getandroidserverconfig?email=%@&passwd=%@", email, passwd]];
 	NSURLSession *session=[NSURLSession sharedSession];
 	__weak typeof(self) weakSelf = self;
 	[_progressIndicator startAnimation:self];
