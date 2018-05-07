@@ -106,10 +106,12 @@
 				[weakSelf.appDelegate setProxyMode:0];
 				[weakSelf.appDelegate configurationDidChange];
 				[weakSelf showAlert:@"自动获取配置并连接成功! "];
-				[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://www.google.com"]];
-				[weakSelf.window close];
+				
 			});
-			
+			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(4.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+				[weakSelf.window close];
+				[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://www.google.com"]];
+			});
 		}
 	}];
 	[task resume];
