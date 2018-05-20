@@ -34,6 +34,15 @@
 	_loginButton.target = self;
 	_loginButton.action = @selector(loginButtonClick);
 	profiles = [_appDelegate profiles];
+	// 读取用户名密码
+	NSUserDefaults *userdefault = [NSUserDefaults standardUserDefaults];
+	NSString *username = [userdefault objectForKey:@"username"];
+	NSString *passwd = [userdefault objectForKey:@"passwd"];
+	if (username && passwd) {
+		[_emailTF setStringValue:username];
+		[_passwdTF setStringValue:passwd];
+	}
+	[_emailTF becomeFirstResponder];
 }
 
 - (void)loginButtonClick {
@@ -97,14 +106,19 @@
 			for (ServerProfile* p in profiles) {
 				[profilesArray addObject:[p outboundProfile]];
 			}
-			[[NSUserDefaults standardUserDefaults] setObject:profilesArray forKey:@"profiles"];
+			NSUserDefaults *userdefault = [NSUserDefaults standardUserDefaults];
+			[userdefault setObject:profilesArray forKey:@"profiles"];
 			// 开启服务
-			[[NSUserDefaults standardUserDefaults] setObject:@(1) forKey:@"proxyState"];
+			[userdefault setObject:@(1) forKey:@"proxyState"];
 			// 默认v2ray模式
-			[[NSUserDefaults standardUserDefaults] setObject:@(0) forKey:@"proxyMode"];
+			[userdefault setObject:@(0) forKey:@"proxyMode"];
 			// 登录标志位
-			[[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"is_login"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
+			[userdefault setBool:YES forKey:@"is_login"];
+			// 保存用户名密码
+			[userdefault setObject:email forKey:@"username"];
+			[userdefault setObject:passwd forKey:@"passwd"];
+			
+			[userdefault synchronize];
 			NSLog(@"Settings saved.");
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[weakSelf.appDelegate setProxyState:YES];
