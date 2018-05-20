@@ -11,6 +11,55 @@
 @implementation ServerProfile
 
 - (ServerProfile*)init {
+	self = [super init];
+	if (self) {
+		[self setAddress:@"cn2.speedss.top"];
+		[self setPort:443];
+		[self setUserId:@"00000000-0000-0000-0000-000000000000"];
+		[self setAlterId:64];
+		[self setLevel:0];
+		[self setRemark:@"speedss.top"];
+		[self setSecurity:aes_128_cfb];
+		[self setNetwork:tcp];
+		[self setSendThrough:@"0.0.0.0"];
+		[self setStreamSettings:@{
+								  @"security": @"tls",
+								  @"tlsSettings": @{
+										  @"serverName": @"",
+										  @"allowInsecure": [NSNumber numberWithBool:NO]
+										  },
+								  @"tcpSettings": @{
+										  @"header": @{
+												  @"type": @"none"
+												  }
+										  },
+								  @"kcpSettings": @{
+										  @"mtu": @1350,
+										  @"tti": @20,
+										  @"uplinkCapacity": @5,
+										  @"downlinkCapacity": @20,
+										  @"congestion": [NSNumber numberWithBool:NO],
+										  @"readBufferSize": @1,
+										  @"writeBufferSize": @1,
+										  @"header": @{
+												  @"type": @"none"
+												  }
+										  },
+								  @"wsSettings": @{
+										  @"connectionReuse": [NSNumber numberWithBool:1],
+										  @"path": @"/v2ray/"
+										  }
+								  }];
+		[self setProxySettings:@{@"address": @"", @"port": @0}];
+		[self setMuxSettings:@{
+							   @"enabled": [NSNumber numberWithBool:NO],
+							   @"concurrency": @8
+							   }];
+	}
+	return self;
+}
+
+- (ServerProfile*)initWithTls:(BOOL)tls {
     self = [super init];
     if (self) {
         [self setAddress:@"cn2.speedss.top"];
@@ -22,34 +71,66 @@
         [self setSecurity:aes_128_cfb];
         [self setNetwork:tcp];
         [self setSendThrough:@"0.0.0.0"];
-        [self setStreamSettings:@{
-                                  @"security": @"tls",
-                                  @"tlsSettings": @{
-                                          @"serverName": @"",
-                                          @"allowInsecure": [NSNumber numberWithBool:NO]
-                                          },
-                                  @"tcpSettings": @{
-                                          @"header": @{
-                                                  @"type": @"none"
-                                                  }
-                                          },
-                                  @"kcpSettings": @{
-                                          @"mtu": @1350,
-                                          @"tti": @20,
-                                          @"uplinkCapacity": @5,
-                                          @"downlinkCapacity": @20,
-                                          @"congestion": [NSNumber numberWithBool:NO],
-                                          @"readBufferSize": @1,
-                                          @"writeBufferSize": @1,
-                                          @"header": @{
-                                                  @"type": @"none"
-                                                  }
-                                          },
-                                  @"wsSettings": @{
-										  @"connectionReuse": [NSNumber numberWithBool:1],
-										  @"path": @"/v2ray/"
-										  }
-                                  }];
+		if (tls) {
+			[self setStreamSettings:@{
+									  @"security": @"tls",
+									  @"tlsSettings": @{
+											  @"serverName": @"",
+											  @"allowInsecure": [NSNumber numberWithBool:NO]
+											  },
+									  @"tcpSettings": @{
+											  @"header": @{
+													  @"type": @"none"
+													  }
+											  },
+									  @"kcpSettings": @{
+											  @"mtu": @1350,
+											  @"tti": @20,
+											  @"uplinkCapacity": @5,
+											  @"downlinkCapacity": @20,
+											  @"congestion": [NSNumber numberWithBool:NO],
+											  @"readBufferSize": @1,
+											  @"writeBufferSize": @1,
+											  @"header": @{
+													  @"type": @"none"
+													  }
+											  },
+									  @"wsSettings": @{
+											  @"connectionReuse": [NSNumber numberWithBool:1],
+											  @"path": @"/v2ray/"
+											  }
+									  }];
+		} else {
+			[self setStreamSettings:@{
+									  @"security": @"none",
+									  @"tlsSettings": @{
+											  @"serverName": @"",
+											  @"allowInsecure": [NSNumber numberWithBool:NO]
+											  },
+									  @"tcpSettings": @{
+											  @"header": @{
+													  @"type": @"none"
+													  }
+											  },
+									  @"kcpSettings": @{
+											  @"mtu": @1350,
+											  @"tti": @20,
+											  @"uplinkCapacity": @5,
+											  @"downlinkCapacity": @20,
+											  @"congestion": [NSNumber numberWithBool:NO],
+											  @"readBufferSize": @1,
+											  @"writeBufferSize": @1,
+											  @"header": @{
+													  @"type": @"none"
+													  }
+											  },
+									  @"wsSettings": @{
+											  @"connectionReuse": [NSNumber numberWithBool:1],
+											  @"path": @"/v2ray/"
+											  }
+									  }];
+		}
+        
         [self setProxySettings:@{@"address": @"", @"port": @0}];
         [self setMuxSettings:@{
                                @"enabled": [NSNumber numberWithBool:NO],

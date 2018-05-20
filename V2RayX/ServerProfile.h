@@ -22,6 +22,7 @@ typedef enum NetWorkType : NSUInteger {
 } NetWorkType;
 
 @interface ServerProfile : NSObject
+- (ServerProfile*)initWithTls:(BOOL)tls;
 - (NSMutableDictionary*)outboundProfile;
 + (ServerProfile*)readFromAnOutboundDic:(NSDictionary*)outDict;
 @property (nonatomic) NSString* address;

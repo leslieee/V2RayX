@@ -76,7 +76,12 @@
 				NSDictionary *jsonDic = [NSJSONSerialization JSONObjectWithData:objectData options:NSJSONReadingMutableContainers error:nil];
 				NSLog(@"%@", jsonDic.description);
 				// 新增配置
-				ServerProfile* newProfile = [[ServerProfile alloc] init];
+				ServerProfile* newProfile;
+				if ([[jsonDic stringValueForKey:@"tls"] isEqualToString:@"tls"]) {
+					newProfile = [[ServerProfile alloc] initWithTls:YES];
+				} else {
+					newProfile = [[ServerProfile alloc] initWithTls:NO];
+				}
 				newProfile.address = [jsonDic objectForKey:@"add"];
 				newProfile.port = [jsonDic intValueForKey:@"port" defaultValue:0];
 				newProfile.userId = [jsonDic objectForKey:@"id"];
