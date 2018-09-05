@@ -15,7 +15,6 @@
 	NSMutableArray *profiles;
 }
 @property (weak) IBOutlet NSTextField *emailTF;
-@property (weak) IBOutlet NSTextField *passwdTF;
 @property (weak) IBOutlet NSButton *loginButton;
 @property (weak) IBOutlet NSProgressIndicator *progressIndicator;
 
@@ -36,26 +35,21 @@
 	profiles = [_appDelegate profiles];
 	// 读取用户名密码
 	NSUserDefaults *userdefault = [NSUserDefaults standardUserDefaults];
-	NSString *username = [userdefault objectForKey:@"username"];
-	NSString *passwd = [userdefault objectForKey:@"passwd"];
-	if (username && passwd) {
-		[_emailTF setStringValue:username];
-		[_passwdTF setStringValue:passwd];
+	NSString *subscribe = [userdefault objectForKey:@"subscribe"];
+	if (subscribe) {
+		[_emailTF setStringValue:subscribe];
 	}
 	[_emailTF becomeFirstResponder];
 }
 
 - (void)loginButtonClick {
-	NSString *email = [_emailTF stringValue];
-	NSString *passwd = [_passwdTF stringValue];
-	if ([email isEqualToString:@""] || [passwd isEqualToString:@""]) {
-		[self showAlert:@"邮箱密码不能为空额"];
+	NSString *subscribe = [_emailTF stringValue];
+	if ([subscribe isEqualToString:@""]) {
+		[self showAlert:@"订阅地址不能为空额"];
 		return;
 	}
 	// 发送请求
-	NSString *urlStr = [NSString stringWithFormat:
-						@"https://speedss.top/getandroidserverconfig?email=%@&passwd=%@", email, passwd];
-	NSString *encodeUrlStr = [urlStr stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+	NSString *encodeUrlStr = [subscribe stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 	NSURL *url=[NSURL URLWithString:encodeUrlStr];
 	NSURLSession *session=[NSURLSession sharedSession];
 	__weak typeof(self) weakSelf = self;
@@ -115,8 +109,7 @@
 			// 登录标志位
 			[userdefault setBool:YES forKey:@"is_login"];
 			// 保存用户名密码
-			[userdefault setObject:email forKey:@"username"];
-			[userdefault setObject:passwd forKey:@"passwd"];
+			[userdefault setObject:subscribe forKey:@"subscribe"];
 			
 			[userdefault synchronize];
 			NSLog(@"Settings saved.");

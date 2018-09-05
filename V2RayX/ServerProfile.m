@@ -13,12 +13,12 @@
 - (ServerProfile*)init {
 	self = [super init];
 	if (self) {
-		[self setAddress:@"cn2.speedss.top"];
+		[self setAddress:@"cn2.speedss.xyz"];
 		[self setPort:443];
 		[self setUserId:@"00000000-0000-0000-0000-000000000000"];
 		[self setAlterId:64];
 		[self setLevel:0];
-		[self setRemark:@"speedss.top"];
+		[self setRemark:@"speedss.xyz"];
 		[self setSecurity:aes_128_cfb];
 		[self setNetwork:tcp];
 		[self setSendThrough:@"0.0.0.0"];
@@ -62,12 +62,12 @@
 - (ServerProfile*)initWithTls:(BOOL)tls {
     self = [super init];
     if (self) {
-        [self setAddress:@"cn2.speedss.top"];
+        [self setAddress:@"cn2.speedss.xyz"];
         [self setPort:443];
         [self setUserId:@"00000000-0000-0000-0000-000000000000"];
         [self setAlterId:64];
         [self setLevel:0];
-        [self setRemark:@"speedss.top"];
+        [self setRemark:@"speedss.xyz"];
         [self setSecurity:aes_128_cfb];
         [self setNetwork:tcp];
         [self setSendThrough:@"0.0.0.0"];
