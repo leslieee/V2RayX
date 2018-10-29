@@ -12,6 +12,11 @@
 #import <SystemConfiguration/SystemConfiguration.h>
 #import "ServerProfile.h"
 #import "LoginWindowController.h"
+#include <netdb.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <arpa/inet.h>
+#import "Reachability.h"
 
 @interface AppDelegate () {
     GCDWebServer *webServer;
@@ -47,6 +52,7 @@ static AppDelegate *appDelegate;
     [_statusBarItem setHighlightMode:YES];
     
     plistPath = [NSString stringWithFormat:@"%@/Library/Application Support/V2RayX/cenmrev.v2rayx.v2ray-core.plist",NSHomeDirectory()];
+    plistTun2socksPath = [NSString stringWithFormat:@"%@/Library/Application Support/V2RayX/cenmrev.v2rayx.tun2socks.plist",NSHomeDirectory()];
     pacPath = [NSString stringWithFormat:@"%@/Library/Application Support/V2RayX/pac/pac.js",NSHomeDirectory()];
     
     NSFileManager* fileManager = [NSFileManager defaultManager];
@@ -89,8 +95,12 @@ static AppDelegate *appDelegate;
     }
     profiles = [[NSMutableArray alloc] init];
     [self readDefaults];
-    [self configurationDidChange];
-	
+    if (proxyMode == trans) {
+        [self configurationDidChangeTransMode];
+    } else {
+        [self configurationDidChange];
+    }
+    
 	// 弹出登录框
 	if (![[NSUserDefaults standardUserDefaults] boolForKey:@"is_login"]) {
 		loginWindowController =[[LoginWindowController alloc] initWithWindowNibName:@"LoginWindowController"];
@@ -110,7 +120,67 @@ static AppDelegate *appDelegate;
     dispatch_resume(dispatchPacSource);
     
     appDelegate = self;
+    
+    Reachability *reachability = [Reachability reachabilityForInternetConnection];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:kReachabilityChangedNotification object:reachability];
+    [reachability startNotifier];
 }
+
+- (void)reachabilityChanged:(NSNotification *)notification {
+    Reachability *reach = [notification object];
+    NetworkStatus ns = [reach currentReachabilityStatus];
+        if (ns==NotReachable) {
+            NSLog(@"此时网络不可达");
+        } else {
+            NSLog(@"此时网络是联通的");
+            // 检测网关变了没有
+            if (proxyState && proxyMode == trans && SWNOTEmptyStr(_gatewayIP) && SWNOTEmptyStr(_serverIPStr)) {
+                NSString *output = [self runCommandLineWithReturn:kV2RayXRoute with:@[@"-n",@"get",@"default"]];
+                NSArray *array = [output componentsSeparatedByString:@"\n"];
+                NSString *errorStr;
+                if (![output containsString:@"route: writing to routing socket: not in table"]) {
+                    if (SWNOTEmptyArr(array)) {
+                        for (NSString *str in array) {
+                            if ([str containsString:@"gateway"]) {
+                                NSString *tmpstr = [str stringByReplacingOccurrencesOfString:@" " withString:@""];
+                                NSArray *tmpArray = [tmpstr componentsSeparatedByString:@":"];
+                                if (SWNOTEmptyArr(tmpArray) && tmpArray.count == 2) {
+                                    if ([self isIPAddress:tmpArray[1]]) {
+                                        if ([tmpArray[1] isEqualToString:@"240.0.0.1"]) {
+                                            // 有可能触发两次通知 然后走到这里
+                                            // errorStr = @"当前已设置过网关(说明已在此模式), 如果网络不正常 请在菜单中选择重置网络设置后再试";
+                                            break;
+                                        } else {
+                                            _gatewayIP = tmpArray[1];
+                                            break;
+                                        }
+                                    } else {
+                                        errorStr = @"网关地址获取失败, 请在菜单中选择重置网络设置后再试";
+                                        break;
+                                    }
+                                } else {
+                                    errorStr = @"网关地址获取失败, 请在菜单中选择重置网络设置后再试";
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        errorStr = @"route命令没有返回信息, 请在菜单中选择重置网络设置后再试";
+                    }
+                } else {
+                    errorStr = @"默认网关丢了.. 请把wifi关掉然后再开启后再试(有线的话拔掉网线在插入), 或者在菜单-重置网络中手动输入(如果你知道的话, 一般为路由器的管理页面地址), 如果不这样做你会一直在断网中..";
+                }
+                if (SWNOTEmptyStr(errorStr) || !SWNOTEmptyStr(_gatewayIP)) {
+                    NSAlert *installAlert = [[NSAlert alloc] init];
+                    [installAlert addButtonWithTitle:@"知道了"];
+                    [installAlert setMessageText:errorStr];
+                    [installAlert runModal];
+                }
+                [self unsetSystemRoute];
+                [self setSystemRoute];
+            }
+        }
+    }
 
 - (void) writeDefaultSettings {
 	ServerProfile *defaultProfile = [[ServerProfile alloc] init];
@@ -124,7 +194,7 @@ static AppDelegate *appDelegate;
       @"selectedServerIndex": [NSNumber numberWithInteger:0],
       @"localPort": [NSNumber numberWithInteger:1081],
       @"httpPort": [NSNumber numberWithInteger:8001],
-      @"udpSupport": [NSNumber numberWithBool:NO],
+      @"udpSupport": [NSNumber numberWithBool:YES],
       @"shareOverLan": [NSNumber numberWithBool:NO],
       @"dnsString": @"localhost",
       @"profiles":@[
@@ -146,6 +216,11 @@ static AppDelegate *appDelegate;
     dispatch_source_cancel(dispatchPacSource);
     //unload v2ray
     runCommandLine(@"/bin/launchctl", @[@"unload", plistPath]);
+    if (proxyMode == trans) {
+        runCommandLine(@"/bin/launchctl", @[@"unload", plistTun2socksPath]);
+        [self unsetSystemRoute];
+    }
+    
     NSLog(@"V2RayX quiting, V2Ray core unloaded.");
     //remove log file
     [[NSFileManager defaultManager] removeItemAtPath:logDirPath error:nil];
@@ -186,27 +261,51 @@ static AppDelegate *appDelegate;
 
 - (IBAction)enableProxy:(id)sender {
     proxyState = !proxyState;
-    [self configurationDidChange];
+    if (proxyMode == trans) {
+        [self configurationDidChangeTransMode];
+    } else {
+        [self configurationDidChange];
+    }
 }
 
 - (IBAction)chooseV2rayRules:(id)sender {
+    if (proxyMode == trans) {
+        runCommandLine(@"/bin/launchctl", @[@"unload", plistTun2socksPath]);
+        [self unsetSystemRoute];
+    }
     proxyMode = rules;
     [self configurationDidChange];
 }
 
 - (IBAction)choosePacMode:(id)sender {
+    if (proxyMode == trans) {
+        runCommandLine(@"/bin/launchctl", @[@"unload", plistTun2socksPath]);
+        [self unsetSystemRoute];
+    }
     proxyMode = pac;
     [self configurationDidChange];
 }
 
 - (IBAction)chooseGlobalMode:(id)sender {
+    if (proxyMode == trans) {
+        runCommandLine(@"/bin/launchctl", @[@"unload", plistTun2socksPath]);
+        [self unsetSystemRoute];
+    }
     proxyMode = global;
     [self configurationDidChange];
 }
 
 - (IBAction)chooseManualMode:(id)sender {
+    if (proxyMode == trans) {
+        runCommandLine(@"/bin/launchctl", @[@"unload", plistTun2socksPath]);
+        [self unsetSystemRoute];
+    }
     proxyMode = manual;
     [self configurationDidChange];
+}
+
+- (IBAction)chooseTransMode:(id)sender {
+    [self configurationDidChangeTransMode];
 }
 
 - (IBAction)showConfigWindow:(id)sender {
@@ -253,6 +352,7 @@ static AppDelegate *appDelegate;
     [_pacModeItem setState:proxyMode == pac];
     [_globalModeItem setState:proxyMode == global];
     [_manualModeItem setState:proxyMode == manual];
+    [_transModeItem setState:proxyMode == trans];
     
 }
 
@@ -283,7 +383,13 @@ static AppDelegate *appDelegate;
     selectedServerIndex = [sender tag];
     [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInteger:selectedServerIndex] forKey:@"selectedServerIndex"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
-    [self configurationDidChange];
+    if (proxyMode == trans) {
+        runCommandLine(@"/bin/launchctl", @[@"unload", plistTun2socksPath]);
+        [self unsetSystemRoute];
+        [self configurationDidChangeTransMode];
+    } else {
+        [self configurationDidChange];
+    }
 }
 
 - (void)readDefaults {
@@ -350,6 +456,13 @@ static AppDelegate *appDelegate;
     });
 }
 
+-(void)unloadTun2socks {
+    dispatch_async(taskQueue, ^{
+        runCommandLine(@"/bin/launchctl", @[@"unload", plistTun2socksPath]);
+        NSLog(@"Tun2socks unloaded.");
+    });
+}
+
 - (NSDictionary*)generateFullConfigFrom:(ServerProfile*)selectedProfile {
     NSMutableDictionary* fullConfig = [NSMutableDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"config-sample" ofType:@"plist"]];
     fullConfig[@"log"] = @{
@@ -362,7 +475,11 @@ static AppDelegate *appDelegate;
     fullConfig[@"inboundDetour"][0][@"listen"] = shareOverLan ? @"0.0.0.0" : @"127.0.0.1";
     fullConfig[@"inboundDetour"][0][@"port"] = @(httpPort);
     fullConfig[@"inbound"][@"settings"][@"udp"] = [NSNumber numberWithBool:udpSupport];
-    fullConfig[@"outbound"] = [selectedProfile outboundProfile];
+    if (SWNOTEmptyStr(_serverIPStr) && proxyMode == trans) {
+        fullConfig[@"outbound"] = [selectedProfile outboundProfileTransMode:_serverIPStr];
+    } else {
+        fullConfig[@"outbound"] = [selectedProfile outboundProfile];
+    }
     if ([selectedProfile.proxySettings[@"address"] isKindOfClass:[NSString class]] && [selectedProfile.proxySettings[@"address"] length] > 0) {
         [fullConfig[@"outboundDetour"] addObject:fullConfig[@"outbound"][@"proxySettings"][@"outbound-proxy-config"]];
         [fullConfig[@"outbound"][@"proxySettings"] removeObjectForKey:@"outbound-proxy-config"];
@@ -403,10 +520,23 @@ static AppDelegate *appDelegate;
     return YES;
 }
 
+-(BOOL)loadTun2socks {
+    [self generateLaunchdTun2socksPlist:plistTun2socksPath];
+    dispatch_async(taskQueue, ^{
+        runCommandLine(@"/bin/launchctl",  @[@"load", plistTun2socksPath]);
+    });
+    return YES;
+}
+
 -(void)generateLaunchdPlist:(NSString*)path {
     NSString* v2rayPath = [NSString stringWithFormat:@"%@/v2ray", [[NSBundle mainBundle] resourcePath]];
     NSString *configPath = [NSString stringWithFormat:@"%@/Library/Application Support/V2RayX/config.json",NSHomeDirectory()];
     NSDictionary *runPlistDic = [[NSDictionary alloc] initWithObjects:@[@"v2rayproject.v2rayx.v2ray-core", @[v2rayPath, @"-config", configPath], [NSNumber numberWithBool:YES]] forKeys:@[@"Label", @"ProgramArguments", @"RunAtLoad"]];
+    [runPlistDic writeToFile:path atomically:NO];
+}
+
+-(void)generateLaunchdTun2socksPlist:(NSString*)path {
+    NSDictionary *runPlistDic = [[NSDictionary alloc] initWithObjects:@[@"v2rayproject.v2rayx.tun2socks", @[kV2RayXTun2socks, @"-proxyServer", @"127.0.0.1:1081"], [NSNumber numberWithBool:YES]] forKeys:@[@"Label", @"ProgramArguments", @"RunAtLoad"]];
     [runPlistDic writeToFile:path atomically:NO];
 }
 
@@ -436,6 +566,35 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
     }
 }
 
+- (NSString *)runCommandLineWithReturn:(NSString *)launchPath with:(NSArray *)arguments {
+    NSTask *task = [[NSTask alloc] init];
+    [task setLaunchPath:launchPath];
+    [task setArguments:arguments];
+    NSPipe *stdoutpipe = [NSPipe pipe];
+    [task setStandardOutput:stdoutpipe];
+    NSPipe *stderrpipe = [NSPipe pipe];
+    [task setStandardError:stderrpipe];
+    NSFileHandle *file;
+    file = [stdoutpipe fileHandleForReading];
+    [task launch];
+    NSData *data;
+    data = [file readDataToEndOfFile];
+    NSString *string;
+    string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    if (string.length > 0) {
+        NSLog(@"%@", string);
+        return string;
+    }
+    file = [stderrpipe fileHandleForReading];
+    data = [file readDataToEndOfFile];
+    string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    if (string.length > 0) {
+        NSLog(@"%@", string);
+        return string;
+    }
+    return @"";
+}
+
 -(void)updateSystemProxy {
     NSArray *arguments;
     if (proxyState) {
@@ -452,6 +611,8 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
             }
             if (proxyMode == 3) { // manual mode
                 arguments = [self currentProxySetByMe] ? @[@"off"] : @[@"-v"];
+            } else if (proxyMode == 4) { // trans mode
+                arguments = @[@"off"];
             } else { // global mode and rule mode
                 arguments = @[@"global", [NSString stringWithFormat:@"%ld", localPort]];
             }
@@ -493,7 +654,10 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
 
 - (BOOL)installHelper {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (![fileManager fileExistsAtPath:kV2RayXHelper] || ![self isSysconfVersionOK]) {
+    if (![fileManager fileExistsAtPath:kV2RayXHelper] ||
+        ![fileManager fileExistsAtPath:kV2RayXTun2socks] ||
+        ![fileManager fileExistsAtPath:kV2RayXRoute] ||
+        ![self isSysconfVersionOK]) {
         NSAlert *installAlert = [[NSAlert alloc] init];
         [installAlert addButtonWithTitle:@"Install"];
         [installAlert addButtonWithTitle:@"Quit"];
@@ -521,6 +685,138 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
         // helper already installed
         return YES;
     }
+}
+
+- (BOOL)setSystemTransMode {
+    ServerProfile *profile = profiles[selectedServerIndex];
+    if (SWNOTEmptyStr(profile.address)) {
+        _serverIPStr = [self getIPWithHostName:profile.address];
+        if (!SWNOTEmptyStr(_serverIPStr) || ![self isIPAddress:_serverIPStr]) {
+            NSAlert *installAlert = [[NSAlert alloc] init];
+            [installAlert addButtonWithTitle:@"知道了"];
+            [installAlert setMessageText:@"解析服务器ip地址失败, 请在菜单中选择重置网络设置后再试"];
+            [installAlert runModal];
+            return NO;
+        }
+    }
+    if (profile.port != 80) {
+            NSAlert *installAlert = [[NSAlert alloc] init];
+            [installAlert addButtonWithTitle:@"知道了"];
+            [installAlert setMessageText:@"透明模式目前仅支持带80端口字样的服务器, 请在菜单-切换服务器中重新选择"];
+            [installAlert runModal];
+            return NO;
+    }
+    NSString *output = [self runCommandLineWithReturn:kV2RayXRoute with:@[@"-n",@"get",@"default"]];
+    NSArray *array = [output componentsSeparatedByString:@"\n"];
+    NSString *errorStr;
+    if (![output containsString:@"route: writing to routing socket: not in table"]) {
+        if (SWNOTEmptyArr(array)) {
+            for (NSString *str in array) {
+                if ([str containsString:@"gateway"]) {
+                    NSString *tmpstr = [str stringByReplacingOccurrencesOfString:@" " withString:@""];
+                    NSArray *tmpArray = [tmpstr componentsSeparatedByString:@":"];
+                    if (SWNOTEmptyArr(tmpArray) && tmpArray.count == 2) {
+                        if ([self isIPAddress:tmpArray[1]]) {
+                            if ([tmpArray[1] isEqualToString:@"240.0.0.1"]) {
+                                errorStr = @"当前已设置过网关(说明已在此模式), 如果网络不正常 请在菜单中选择重置网络设置后再试";
+                                break;
+                            } else {
+                                _gatewayIP = tmpArray[1];
+                                break;
+                            }
+                        } else {
+                            errorStr = @"网关地址获取失败, 请在菜单中选择重置网络设置后再试";
+                            break;
+                        }
+                    } else {
+                        errorStr = @"网关地址获取失败, 请在菜单中选择重置网络设置后再试";
+                        break;
+                    }
+                }
+            }
+        } else {
+            errorStr = @"route命令没有返回信息, 请在菜单中选择重置网络设置后再试";
+        }
+    } else {
+        errorStr = @"默认网关丢了.. 请把wifi关掉然后再开启后再试(有线的话拔掉网线在插入), 或者在菜单-重置网络中手动输入(如果你知道的话, 一般为路由器的管理页面地址), 如果不这样做你会一直在断网中..";
+    }
+    if (SWNOTEmptyStr(errorStr) || !SWNOTEmptyStr(_gatewayIP)) {
+        NSAlert *installAlert = [[NSAlert alloc] init];
+        [installAlert addButtonWithTitle:@"知道了"];
+        [installAlert setMessageText:errorStr];
+        [installAlert runModal];
+        return NO;
+    }
+    
+    NSString *stdoutStrWifi = [self runCommandLineWithReturn:@"/usr/sbin/networksetup" with:@[@"-getdnsservers",@"Wi-Fi"]];
+    NSString *stdoutStrEthernet = [self runCommandLineWithReturn:@"/usr/sbin/networksetup" with:@[@"-getdnsservers",@"Ethernet"]];
+    if ([stdoutStrWifi containsString:@"8.8.8.8"] || [stdoutStrEthernet containsString:@"8.8.8.8"]) {
+        [self setSystemRoute];
+        return YES;
+    }
+    NSAlert *installAlert = [[NSAlert alloc] init];
+    [installAlert addButtonWithTitle:@"设置"];
+    [installAlert addButtonWithTitle:@"使用目前默认"];
+    [installAlert setMessageText:@"透明模式需要设置系统dns为8.8.8.8, 以防止域名污染(使用目前默认会打不开谷歌), 需要root权限"];
+    if ([installAlert runModal] == NSAlertFirstButtonReturn) {
+        NSString *helperPath = [NSString stringWithFormat:@"%@/%@", [[NSBundle mainBundle] resourcePath], @"set_system_transmode.sh"];
+        NSDictionary *error;
+        NSString *script = [NSString stringWithFormat: @"do shell script \"bash %@\" with administrator privileges", helperPath];
+        NSAppleScript *appleScript = [[NSAppleScript new] initWithSource:script];
+        if ([appleScript executeAndReturnError:&error]) {
+            NSLog(@"dns set success");
+            // return YES;
+        } else {
+            NSLog(@"dns set failure");
+            // unknown failure
+            // return NO;
+        }
+    } else {
+        // stopped by user
+        // return NO;
+    }
+    [self setSystemRoute];
+    return YES;
+}
+
+- (void)setSystemRoute {
+    runCommandLine(kV2RayXRoute, @[@"delete", @"default"]);
+    runCommandLine(kV2RayXRoute, @[@"add", @"default", @"240.0.0.1"]);
+    runCommandLine(kV2RayXRoute, @[@"add", _serverIPStr, _gatewayIP]);
+    runCommandLine(kV2RayXRoute, @[@"add", @"192.168.0.0/16", _gatewayIP]);
+}
+
+- (void)unsetSystemRoute {
+    runCommandLine(kV2RayXRoute, @[@"delete", @"default"]);
+    runCommandLine(kV2RayXRoute, @[@"add", @"default", _gatewayIP]);
+    runCommandLine(kV2RayXRoute, @[@"delete", _serverIPStr]);
+    runCommandLine(kV2RayXRoute, @[@"delete", @"192.168.0.0/16"]);
+}
+
+- (BOOL)isIPAddress:(NSString *)ip {
+    NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:@"^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$" options:0 error:nil];
+    NSArray *results = [regex matchesInString:ip options:0 range:NSMakeRange(0, ip.length)];
+    return results.count > 0;
+}
+
+- (NSString*)getIPWithHostName:(const NSString*)hostName {
+    const char *hostN= [hostName UTF8String];
+    struct hostent* phot;
+    @try {
+        phot = gethostbyname(hostN);
+    } @catch (NSException *exception) {
+        return nil;
+    }
+    struct in_addr ip_addr;
+    if (phot == NULL) {
+        NSLog(@"获取失败");
+        return nil;
+    }
+    memcpy(&ip_addr, phot->h_addr_list[0], 4);
+    char ip[20] = {0}; inet_ntop(AF_INET, &ip_addr, ip, sizeof(ip));
+    NSString* strIPAddress = [NSString stringWithUTF8String:ip];
+    NSLog(@"ip=====%@",strIPAddress);
+    return strIPAddress;
 }
 
 - (BOOL)isSysconfVersionOK {
@@ -555,7 +851,7 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
 
 -(void)configurationDidChange {
     [self unloadV2ray];
-    //[self readDefaults];
+    // [self readDefaults];
     if (proxyState) {
         if (selectedServerIndex >= 0 && selectedServerIndex < [profiles count]) {
             [self loadV2ray];
@@ -567,6 +863,35 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
             [noServerAlert runModal];
             NSLog(@"V2Ray core loaded failed: no avalibale servers.");
         }
+    }
+    [self updateSystemProxy];
+    [self updateMenus];
+    [self updateServerMenuList];
+}
+
+-(void)configurationDidChangeTransMode {
+    if (proxyState) {
+        if (selectedServerIndex >= 0 && selectedServerIndex < [profiles count]) {
+            [self loadTun2socks];
+            if (![self setSystemTransMode]) {
+                return;
+            }
+            // 如果提前设置了 但是检测失败了 会影响切换其他模式
+            proxyMode = trans;
+            [self unloadV2ray];
+            [self loadV2ray];
+        } else {
+            proxyState = NO;
+            //[[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithBool:NO] forKey:@"proxyState"];
+            NSAlert *noServerAlert = [[NSAlert alloc] init];
+            [noServerAlert setMessageText:@"No available Server Profiles!"];
+            [noServerAlert runModal];
+            NSLog(@"V2Ray core loaded failed: no avalibale servers.");
+        }
+    } else {
+        [self unloadV2ray];
+        [self unloadTun2socks];
+        [self unsetSystemRoute];
     }
     [self updateSystemProxy];
     [self updateMenus];

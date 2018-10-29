@@ -8,15 +8,22 @@
 #import <Cocoa/Cocoa.h>
 
 #define kV2RayXHelper @"/Library/Application Support/V2RayX/v2rayx_sysconf"
+#define kV2RayXTun2socks @"/Library/Application Support/V2RayX/tun2socks"
+#define kV2RayXRoute @"/Library/Application Support/V2RayX/route"
 #define kSysconfVersion @"v2rayx_sysconf 1.0.0"
 #define kV2RayXSettingVersion 4
 #define nilCoalescing(a,b) ( (a != nil) ? (a) : (b) ) // equivalent to ?? operator in Swift
+#define NOTNULL(x) ((![x isKindOfClass:[NSNull class]])&&x)
+#define SWNOTEmptyArr(X) (NOTNULL(X)&&[X isKindOfClass:[NSArray class]]&&[X count])
+#define SWNOTEmptyDictionary(X) (NOTNULL(X)&&[X isKindOfClass:[NSDictionary class]]&&[[X allKeys]count])
+#define SWNOTEmptyStr(X) (NOTNULL(X)&&[X isKindOfClass:[NSString class]]&&((NSString *)X).length)
 
 typedef enum ProxyMode : NSInteger{
     rules,
     pac,
     global,
-    manual
+    manual,
+    trans
 } ProxyMode;
 
 
@@ -34,6 +41,7 @@ typedef enum ProxyMode : NSInteger{
     
     
     NSString* plistPath;
+    NSString* plistTun2socksPath;
     NSString* pacPath;
     NSString* logDirPath;
 }
@@ -50,6 +58,8 @@ typedef enum ProxyMode : NSInteger{
 @property NSString* dnsString;
 @property NSMutableArray *profiles;
 @property NSString* logLevel;
+@property NSString *serverIPStr;
+@property NSString *gatewayIP;
 
 
 - (IBAction)showHelp:(id)sender;
@@ -58,10 +68,12 @@ typedef enum ProxyMode : NSInteger{
 - (IBAction)chooseV2rayRules:(id)sender;
 - (IBAction)chooseGlobalMode:(id)sender;
 - (IBAction)chooseManualMode:(id)sender;
+- (IBAction)chooseTransMode:(id)sender;
 - (IBAction)showConfigWindow:(id)sender;
 - (IBAction)editPac:(id)sender;
 - (IBAction)viewLog:(id)sender;
 - (IBAction)loginToSpeedss:(id)sender;
+
 
 - (void)configurationDidChange;
 - (NSString*)logDirPath;
@@ -74,6 +86,7 @@ typedef enum ProxyMode : NSInteger{
 @property (weak, nonatomic) IBOutlet NSMenuItem *v2rayRulesItem;
 @property (weak, nonatomic) IBOutlet NSMenuItem *globalModeItem;
 @property (weak) IBOutlet NSMenuItem *manualModeItem;
+@property (weak) IBOutlet NSMenuItem *transModeItem;
 @property (weak, nonatomic) IBOutlet NSMenuItem *serversItem;
 @property (weak, nonatomic) IBOutlet NSMenu *serverListMenu;
 

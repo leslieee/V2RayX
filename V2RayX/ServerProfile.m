@@ -214,6 +214,49 @@
     return [result mutableCopy];
 }
 
+- (NSMutableDictionary*)outboundProfileTransMode:(NSString *)serverIPStr {
+    NSMutableDictionary* fullStreamSettings = [NSMutableDictionary dictionaryWithDictionary:streamSettings];
+    fullStreamSettings[@"network"] = @[@"tcp",@"kcp", @"ws"][network];
+    NSDictionary* result =
+    @{
+      @"sendThrough": sendThrough,
+      @"protocol": @"vmess",
+      @"settings": @{
+              @"vnext": @[
+                      @{
+                          @"remark": nilCoalescing(remark, @""),
+                          @"address": serverIPStr,
+                          @"port": [NSNumber numberWithUnsignedInteger:port],
+                          @"users": @[
+                                  @{
+                                      @"id": userId != nil ? [userId stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]: @"",
+                                      @"alterId": [NSNumber numberWithUnsignedInteger:alterId],
+                                      @"security": @[@"aes-128-cfb", @"aes-128-gcm", @"chacha20-poly1305", @"auto"][security],
+                                      @"level": [NSNumber numberWithUnsignedInteger:level]
+                                      }
+                                  ]
+                          }
+                      ]
+              },
+      @"streamSettings": fullStreamSettings,
+      @"proxySettings": [@{
+                           @"tag": @"transit",
+                           @"outbound-proxy-config": @{
+                                   @"protocol": @"socks",
+                                   @"settings": @{
+                                           @"servers": @[@{
+                                                             @"address": nilCoalescing(proxySettings[@"address"], @"") ,
+                                                             @"port": nilCoalescing(proxySettings[@"port"], @0),
+                                                             }]
+                                           },
+                                   @"tag": @"transit"
+                                   }
+                           } mutableCopy],
+      @"mux": muxSettings,
+      };
+    return [result mutableCopy];
+}
+
 @synthesize address;
 @synthesize port;
 @synthesize userId;

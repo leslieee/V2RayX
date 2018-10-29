@@ -60,7 +60,7 @@
 			<key>ip</key>
 			<string>127.0.0.1</string>
 			<key>udp</key>
-			<false/>
+			<true/>
 		</dict>
 	</dict>
 	<key>log</key>
