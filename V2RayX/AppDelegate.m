@@ -675,14 +675,14 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
     
     NSString *stdoutStrWifi = [self runCommandLineWithReturn:@"/usr/sbin/networksetup" with:@[@"-getdnsservers",@"Wi-Fi"]];
     NSString *stdoutStrEthernet = [self runCommandLineWithReturn:@"/usr/sbin/networksetup" with:@[@"-getdnsservers",@"Ethernet"]];
-    if ([stdoutStrWifi containsString:@"120.78.224.69"] || [stdoutStrEthernet containsString:@"120.78.224.69"]) {
+    if ([stdoutStrWifi containsString:@"8.8.8.8"] || [stdoutStrEthernet containsString:@"8.8.8.8"]) {
         [self setSystemRoute];
         return YES;
     }
     NSAlert *installAlert = [[NSAlert alloc] init];
     [installAlert addButtonWithTitle:@"设置"];
     [installAlert addButtonWithTitle:@"使用目前默认"];
-    [installAlert setMessageText:@"透明模式需要设置系统dns为120.78.224.69, 以防止域名污染(使用目前默认会打不开谷歌), 需要root权限"];
+    [installAlert setMessageText:@"透明模式需要设置系统dns为8.8.8.8, 以防止域名污染(使用目前默认会打不开谷歌), 需要root权限"];
     if ([installAlert runModal] == NSAlertFirstButtonReturn) {
         NSString *helperPath = [NSString stringWithFormat:@"%@/%@", [[NSBundle mainBundle] resourcePath], @"set_system_transmode.sh"];
         NSDictionary *error;
@@ -709,7 +709,6 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
     runCommandLine(kV2RayXRoute, @[@"add", @"default", @"240.0.0.1"]);
     runCommandLine(kV2RayXRoute, @[@"add", _serverIPStr, _gatewayIP]);
     runCommandLine(kV2RayXRoute, @[@"add", @"192.168.0.0/16", _gatewayIP]);
-    runCommandLine(kV2RayXRoute, @[@"add", @"120.78.224.69", _gatewayIP]);
 }
 
 - (void)unsetSystemRoute {
@@ -717,7 +716,6 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
     runCommandLine(kV2RayXRoute, @[@"add", @"default", _gatewayIP]);
     runCommandLine(kV2RayXRoute, @[@"delete", _serverIPStr]);
     runCommandLine(kV2RayXRoute, @[@"delete", @"192.168.0.0/16"]);
-    runCommandLine(kV2RayXRoute, @[@"delete", @"120.78.224.69"]);
 }
 
 - (BOOL)isIPAddress:(NSString *)ip {
