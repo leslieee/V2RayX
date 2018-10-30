@@ -317,10 +317,22 @@ static AppDelegate *appDelegate;
 }
 
 - (void)switchServer:(id)sender {
-    selectedServerIndex = [sender tag];
     if (proxyMode == trans) {
+        ServerProfile *profile = profiles[[sender tag]];
+        if (profile.port != 80) {
+            NSAlert *installAlert = [[NSAlert alloc] init];
+            [installAlert addButtonWithTitle:@"知道了"];
+            [installAlert setMessageText:@"透明模式目前仅支持带80端口字样的服务器, 请在菜单-切换服务器中重新选择"];
+            [installAlert runModal];
+            return;
+        }
+        selectedServerIndex = [sender tag];
+        // 如果不unload以及unset 切换到不可用的服务器 再切回来会导致断网解析不到域名
+        runCommandLine(@"/bin/launchctl", @[@"unload", plistTun2socksPath]);
+        [self unsetSystemRoute];
         [self configurationDidChangeTransMode];
     } else {
+        selectedServerIndex = [sender tag];
         [self configurationDidChange];
     }
     [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInteger:selectedServerIndex] forKey:@"selectedServerIndex"];
