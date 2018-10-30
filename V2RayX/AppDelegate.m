@@ -381,15 +381,13 @@ static AppDelegate *appDelegate;
 
 - (void)switchServer:(id)sender {
     selectedServerIndex = [sender tag];
-    [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInteger:selectedServerIndex] forKey:@"selectedServerIndex"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
     if (proxyMode == trans) {
-        runCommandLine(@"/bin/launchctl", @[@"unload", plistTun2socksPath]);
-        [self unsetSystemRoute];
         [self configurationDidChangeTransMode];
     } else {
         [self configurationDidChange];
     }
+    [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInteger:selectedServerIndex] forKey:@"selectedServerIndex"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)readDefaults {
