@@ -42,7 +42,6 @@ typedef enum ProxyMode : NSInteger{
     
     NSString* plistPath;
     NSString* plistTun2socksPath;
-    NSString* pacPath;
     NSString* logDirPath;
 }
 
@@ -64,13 +63,10 @@ typedef enum ProxyMode : NSInteger{
 
 - (IBAction)showHelp:(id)sender;
 - (IBAction)enableProxy:(id)sender;
-- (IBAction)choosePacMode:(id)sender;
 - (IBAction)chooseV2rayRules:(id)sender;
-- (IBAction)chooseGlobalMode:(id)sender;
 - (IBAction)chooseManualMode:(id)sender;
 - (IBAction)chooseTransMode:(id)sender;
 - (IBAction)showConfigWindow:(id)sender;
-- (IBAction)editPac:(id)sender;
 - (IBAction)viewLog:(id)sender;
 - (IBAction)loginToSpeedss:(id)sender;
 
@@ -82,9 +78,7 @@ typedef enum ProxyMode : NSInteger{
 @property (strong, nonatomic) IBOutlet NSMenu *statusBarMenu;
 @property (weak, nonatomic) IBOutlet NSMenuItem *v2rayStatusItem;
 @property (weak, nonatomic) IBOutlet NSMenuItem *enabelV2rayItem;
-@property (weak, nonatomic) IBOutlet NSMenuItem *pacModeItem;
 @property (weak, nonatomic) IBOutlet NSMenuItem *v2rayRulesItem;
-@property (weak, nonatomic) IBOutlet NSMenuItem *globalModeItem;
 @property (weak) IBOutlet NSMenuItem *manualModeItem;
 @property (weak) IBOutlet NSMenuItem *transModeItem;
 @property (weak, nonatomic) IBOutlet NSMenuItem *serversItem;

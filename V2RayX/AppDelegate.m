@@ -6,8 +6,6 @@
 //
 
 #import "AppDelegate.h"
-#import "GCDWebServer.h"
-#import "GCDWebServerDataResponse.h"
 #import "ConfigWindowController.h"
 #import <SystemConfiguration/SystemConfiguration.h>
 #import "ServerProfile.h"
@@ -19,12 +17,10 @@
 #import "Reachability.h"
 
 @interface AppDelegate () {
-    GCDWebServer *webServer;
     ConfigWindowController *configWindowController;
 	LoginWindowController *loginWindowController;
 
     dispatch_queue_t taskQueue;
-    dispatch_source_t dispatchPacSource;
     FSEventStreamRef fsEventStream;
 }
 
@@ -53,20 +49,8 @@ static AppDelegate *appDelegate;
     
     plistPath = [NSString stringWithFormat:@"%@/Library/Application Support/V2RayX/cenmrev.v2rayx.v2ray-core.plist",NSHomeDirectory()];
     plistTun2socksPath = [NSString stringWithFormat:@"%@/Library/Application Support/V2RayX/cenmrev.v2rayx.tun2socks.plist",NSHomeDirectory()];
-    pacPath = [NSString stringWithFormat:@"%@/Library/Application Support/V2RayX/pac/pac.js",NSHomeDirectory()];
     
     NSFileManager* fileManager = [NSFileManager defaultManager];
-    NSString *pacDir = [NSString stringWithFormat:@"%@/Library/Application Support/V2RayX/pac", NSHomeDirectory()];
-    //create application support directory and pac directory
-    if (![fileManager fileExistsAtPath:pacDir]) {
-        [fileManager createDirectoryAtPath:pacDir withIntermediateDirectories:YES attributes:nil error:nil];
-    }
-    //check if pac file exist
-    if (![fileManager fileExistsAtPath:pacPath]) {
-        NSString* simplePac = [[NSBundle mainBundle] pathForResource:@"simple" ofType:@"pac"];
-        [fileManager copyItemAtPath:simplePac toPath:pacPath error:nil];
-    }
-    
     // Create Log Dir
     do {
         NSString* logDirName = [NSString stringWithFormat:@"cenmrev.v2rayx.log.%@",
@@ -77,13 +61,6 @@ static AppDelegate *appDelegate;
     [fileManager createFileAtPath:[NSString stringWithFormat:@"%@/access.log", logDirPath] contents:nil attributes:nil];
     [fileManager createFileAtPath:[NSString stringWithFormat:@"%@/error.log", logDirPath] contents:nil attributes:nil];
     
-    // set up pac server
-    __weak typeof(self) weakSelf = self;
-    //http://stackoverflow.com/questions/14556605/capturing-self-strongly-in-this-block-is-likely-to-lead-to-a-retain-cycle
-    webServer = [[GCDWebServer alloc] init];
-    [webServer addHandlerForMethod:@"GET" path:@"/proxy.pac" requestClass:[GCDWebServerRequest class] processBlock:^GCDWebServerResponse *(GCDWebServerRequest* request) {
-        return [GCDWebServerDataResponse responseWithData:[weakSelf pacData] contentType:@"application/x-ns-proxy-autoconfig"];
-    }];
     NSNumber* setingVersion = [[NSUserDefaults standardUserDefaults] objectForKey:@"setingVersion"];
     if(setingVersion == nil || [setingVersion integerValue] != kV2RayXSettingVersion) {
         // NSAlert *noServerAlert = [[NSAlert alloc] init];
@@ -109,15 +86,6 @@ static AppDelegate *appDelegate;
 		[NSApp activateIgnoringOtherApps:YES];
 		[loginWindowController.window makeKeyAndOrderFront:nil];
 	}
-    
-    //https://randexdev.com/2012/03/how-to-detect-directory-changes-using-gcd/
-    int fildes = open([pacPath cStringUsingEncoding:NSUTF8StringEncoding], O_RDONLY);
-    dispatchPacSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_VNODE, fildes, DISPATCH_VNODE_WRITE | DISPATCH_VNODE_EXTEND, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0));
-    dispatch_source_set_event_handler(dispatchPacSource, ^{
-        NSLog(@"pac changed");
-        [appDelegate updateSystemProxy];
-    });
-    dispatch_resume(dispatchPacSource);
     
     appDelegate = self;
     
@@ -207,20 +175,13 @@ static AppDelegate *appDelegate;
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-- (NSData*) pacData {
-    return [NSData dataWithContentsOfFile:pacPath];
-}
-
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
-    //stop monitor pac
-    dispatch_source_cancel(dispatchPacSource);
     //unload v2ray
     runCommandLine(@"/bin/launchctl", @[@"unload", plistPath]);
     if (proxyMode == trans) {
         runCommandLine(@"/bin/launchctl", @[@"unload", plistTun2socksPath]);
         [self unsetSystemRoute];
     }
-    
     NSLog(@"V2RayX quiting, V2Ray core unloaded.");
     //remove log file
     [[NSFileManager defaultManager] removeItemAtPath:logDirPath error:nil];
@@ -277,24 +238,6 @@ static AppDelegate *appDelegate;
     [self configurationDidChange];
 }
 
-- (IBAction)choosePacMode:(id)sender {
-    if (proxyMode == trans) {
-        runCommandLine(@"/bin/launchctl", @[@"unload", plistTun2socksPath]);
-        [self unsetSystemRoute];
-    }
-    proxyMode = pac;
-    [self configurationDidChange];
-}
-
-- (IBAction)chooseGlobalMode:(id)sender {
-    if (proxyMode == trans) {
-        runCommandLine(@"/bin/launchctl", @[@"unload", plistTun2socksPath]);
-        [self unsetSystemRoute];
-    }
-    proxyMode = global;
-    [self configurationDidChange];
-}
-
 - (IBAction)chooseManualMode:(id)sender {
     if (proxyMode == trans) {
         runCommandLine(@"/bin/launchctl", @[@"unload", plistTun2socksPath]);
@@ -319,10 +262,6 @@ static AppDelegate *appDelegate;
     [configWindowController.window makeKeyAndOrderFront:nil];
 }
 
-- (IBAction)editPac:(id)sender {
-    [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[[NSURL fileURLWithPath:pacPath]]];
-}
-
 - (IBAction)viewLog:(id)sender {
     [[NSWorkspace sharedWorkspace] openFile:logDirPath];
 }
@@ -338,19 +277,17 @@ static AppDelegate *appDelegate;
 - (void)updateMenus {
     if (proxyState) {
         [_v2rayStatusItem setTitle:@"V2Ray: On"];
-        [_enabelV2rayItem setTitle:@"Stop V2Ray"];
+        [_enabelV2rayItem setTitle:@"停止服务"];
         NSImage *icon = [NSImage imageNamed:@"statusBarIcon"];
         [icon setTemplate:YES];
         [_statusBarItem setImage:icon];
     } else {
         [_v2rayStatusItem setTitle:@"V2Ray: Off"];
-        [_enabelV2rayItem setTitle:@"Start V2Ray"];
+        [_enabelV2rayItem setTitle:@"开启服务"];
         [_statusBarItem setImage:[NSImage imageNamed:@"statusBarIcon_disabled"]];
         NSLog(@"icon updated");
     }
     [_v2rayRulesItem setState:proxyMode == rules];
-    [_pacModeItem setState:proxyMode == pac];
-    [_globalModeItem setState:proxyMode == global];
     [_manualModeItem setState:proxyMode == manual];
     [_transModeItem setState:proxyMode == trans];
     
@@ -597,16 +534,9 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
     NSArray *arguments;
     if (proxyState) {
         if (proxyMode == 1) { // pac mode
-            // close system proxy first to refresh pac file
-            if (![webServer isRunning]) {
-                [webServer startWithPort:8070 bonjourName:nil];
-            }
             runCommandLine(kV2RayXHelper, @[@"off"]);
             arguments = @[@"auto"];
         } else {
-            if ([webServer isRunning]) {
-                [webServer stop];
-            }
             if (proxyMode == 3) { // manual mode
                 arguments = [self currentProxySetByMe] ? @[@"off"] : @[@"-v"];
             } else if (proxyMode == 4) { // trans mode
@@ -617,9 +547,6 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
         }
     } else {
         arguments = [NSArray arrayWithObjects:@"off", nil];
-        if ([webServer isRunning]) {
-            [webServer stop];
-        }
     }
     runCommandLine(kV2RayXHelper,arguments);
     NSLog(@"system proxy state:%@,%ld",proxyState?@"on":@"off", (long)proxyMode);
