@@ -469,10 +469,23 @@ static AppDelegate *appDelegate;
 
 -(BOOL)loadTun2socks {
     [self generateLaunchdTun2socksPlist:plistTun2socksPath];
-    dispatch_async(taskQueue, ^{
+    // dispatch_async(taskQueue, ^{
         runCommandLine(@"/bin/launchctl",  @[@"load", plistTun2socksPath]);
-    });
+    // });
+    [self checkTun2socksRunStatus];
     return YES;
+}
+
+-(void)checkTun2socksRunStatus {
+    NSLog(@"checkTun2socksRunStatus");
+    NSString *output = [self runCommandLineWithReturn:@"/sbin/ifconfig" with:@[]];
+    if (SWNOTEmptyStr(output) && [output containsString:@"240.0.0.1"]) {
+        NSLog(@"checkTun2socksRunStatus_ok");
+        return;
+    } else {
+        [NSThread sleepForTimeInterval:0.5];
+        [self checkTun2socksRunStatus];
+    }
 }
 
 -(void)generateLaunchdPlist:(NSString*)path {
