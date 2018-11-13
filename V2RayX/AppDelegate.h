@@ -42,6 +42,7 @@ typedef enum ProxyMode : NSInteger{
     
     NSString* plistPath;
     NSString* plistTun2socksPath;
+    NSString* pacPath;
     NSString* logDirPath;
 }
 

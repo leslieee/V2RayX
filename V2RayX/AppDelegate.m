@@ -49,8 +49,14 @@ static AppDelegate *appDelegate;
     
     plistPath = [NSString stringWithFormat:@"%@/Library/Application Support/V2RayX/cenmrev.v2rayx.v2ray-core.plist",NSHomeDirectory()];
     plistTun2socksPath = [NSString stringWithFormat:@"%@/Library/Application Support/V2RayX/cenmrev.v2rayx.tun2socks.plist",NSHomeDirectory()];
+    pacPath = [NSString stringWithFormat:@"%@/Library/Application Support/V2RayX/pac/pac.js",NSHomeDirectory()];
     
     NSFileManager* fileManager = [NSFileManager defaultManager];
+    NSString *pacDir = [NSString stringWithFormat:@"%@/Library/Application Support/V2RayX/pac", NSHomeDirectory()];
+    //create application support directory and pac directory
+    if (![fileManager fileExistsAtPath:pacDir]) {
+        [fileManager createDirectoryAtPath:pacDir withIntermediateDirectories:YES attributes:nil error:nil];
+    }
     // Create Log Dir
     do {
         NSString* logDirName = [NSString stringWithFormat:@"cenmrev.v2rayx.log.%@",
