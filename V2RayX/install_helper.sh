@@ -19,7 +19,4 @@ sudo cp "/sbin/route" "/Library/Application Support/V2RayX/"
 sudo chown root:admin "/Library/Application Support/V2RayX/route"
 sudo chmod +s "/Library/Application Support/V2RayX/route"
 
-sudo networksetup -setdnsservers Wi-Fi 8.8.8.8
-sudo networksetup -setdnsservers Ethernet 8.8.8.8
-
 echo done

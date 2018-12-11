@@ -712,8 +712,8 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
     }
     NSAlert *installAlert = [[NSAlert alloc] init];
     [installAlert addButtonWithTitle:@"设置"];
-    [installAlert addButtonWithTitle:@"使用目前默认"];
-    [installAlert setMessageText:@"透明模式需要设置系统dns为8.8.8.8, 以防止域名污染(使用目前默认会打不开谷歌), 需要root权限"];
+    [installAlert addButtonWithTitle:@"使用目前默认(有污染)"];
+    [installAlert setMessageText:@"透明模式需要设置系统dns为8.8.8.8, 以防止域名污染(使用目前默认 可能会打不开谷歌), 需要root权限. 关闭请前往系统偏好-网络-高级-dns, 将8.8.8.8删掉即可"];
     if ([installAlert runModal] == NSAlertFirstButtonReturn) {
         NSString *helperPath = [NSString stringWithFormat:@"%@/%@", [[NSBundle mainBundle] resourcePath], @"set_system_transmode.sh"];
         NSDictionary *error;
