@@ -40,11 +40,6 @@
 		[_emailTF setStringValue:subscribe];
 	}
 	[_emailTF becomeFirstResponder];
-    if (self.appDelegate.proxyState) {
-        // 先把系统代理关掉
-        [self.appDelegate setProxyState:NO];
-        [self.appDelegate configurationDidChange];
-    }
 }
 
 - (void)loginButtonClick {

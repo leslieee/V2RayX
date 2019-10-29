@@ -178,6 +178,18 @@
 					<key>type</key>
 					<string>field</string>
 				</dict>
+				<dict>
+					<key>type</key>
+					<string>field</string>
+					<key>domain</key>
+					<array>
+						<string>speedss.ml</string>
+						<string>speedss.xyz</string>
+						<string>spess.github.io</string>
+					</array>
+					<key>outboundTag</key>
+					<string>direct</string>
+				</dict>
 			</array>
 		</dict>
 		<key>strategy</key>
