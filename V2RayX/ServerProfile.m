@@ -26,7 +26,7 @@
 								  @"security": @"tls",
 								  @"tlsSettings": @{
 										  @"serverName": @"",
-										  @"allowInsecure": [NSNumber numberWithBool:NO]
+										  @"allowInsecure": [NSNumber numberWithBool:YES]
 										  },
 								  @"tcpSettings": @{
 										  @"header": @{
@@ -76,7 +76,7 @@
 									  @"security": @"tls",
 									  @"tlsSettings": @{
 											  @"serverName": @"",
-											  @"allowInsecure": [NSNumber numberWithBool:NO]
+											  @"allowInsecure": [NSNumber numberWithBool:YES]
 											  },
 									  @"tcpSettings": @{
 											  @"header": @{
@@ -105,7 +105,7 @@
 									  @"security": @"none",
 									  @"tlsSettings": @{
 											  @"serverName": @"",
-											  @"allowInsecure": [NSNumber numberWithBool:NO]
+											  @"allowInsecure": [NSNumber numberWithBool:YES]
 											  },
 									  @"tcpSettings": @{
 											  @"header": @{

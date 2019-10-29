@@ -325,13 +325,13 @@ static AppDelegate *appDelegate;
 - (void)switchServer:(id)sender {
     if (proxyMode == trans) {
         ServerProfile *profile = profiles[[sender tag]];
-        if (profile.port != 80) {
-            NSAlert *installAlert = [[NSAlert alloc] init];
-            [installAlert addButtonWithTitle:@"知道了"];
-            [installAlert setMessageText:@"透明模式目前仅支持带80端口字样的服务器, 请在菜单-切换服务器中重新选择"];
-            [installAlert runModal];
-            return;
-        }
+//        if (profile.port == 443) {
+//            NSAlert *installAlert = [[NSAlert alloc] init];
+//            [installAlert addButtonWithTitle:@"知道了"];
+//            [installAlert setMessageText:@"透明模式目前仅支持带80端口或跳板机字样的服务器, 请在菜单-切换服务器中重新选择"];
+//            [installAlert runModal];
+//            return;
+//        }
         selectedServerIndex = [sender tag];
         // 如果不unload以及unset 切换到不可用的服务器 再切回来会导致断网解析不到域名
         runCommandLine(@"/bin/launchctl", @[@"unload", plistTun2socksPath]);
@@ -655,13 +655,13 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
             return NO;
         }
     }
-    if (profile.port != 80) {
-            NSAlert *installAlert = [[NSAlert alloc] init];
-            [installAlert addButtonWithTitle:@"知道了"];
-            [installAlert setMessageText:@"透明模式目前仅支持带80端口字样的服务器, 请在菜单-切换服务器中重新选择"];
-            [installAlert runModal];
-            return NO;
-    }
+//    if (profile.port == 443) {
+//            NSAlert *installAlert = [[NSAlert alloc] init];
+//            [installAlert addButtonWithTitle:@"知道了"];
+//            [installAlert setMessageText:@"透明模式目前仅支持带80端口或跳板机字样的服务器, 请在菜单-切换服务器中重新选择"];
+//            [installAlert runModal];
+//            return NO;
+//    }
     NSString *output = [self runCommandLineWithReturn:kV2RayXRoute with:@[@"-n",@"get",@"default"]];
     NSArray *array = [output componentsSeparatedByString:@"\n"];
     NSString *errorStr;

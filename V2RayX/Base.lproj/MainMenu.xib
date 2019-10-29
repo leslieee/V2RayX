@@ -687,10 +687,16 @@
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="Zce-eo-WsH"/>
-                <menuItem title="默认规则" id="bUi-AV-IfA">
+                <menuItem title="默认规则 (大陆白名单)" id="bUi-AV-IfA">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="chooseV2rayRules:" target="Voe-Tx-rLC" id="D4f-2N-1Dq"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="全局代理 (所有app走代理)" id="AVB-i7-JtJ">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="chooseTransMode:" target="Voe-Tx-rLC" id="H3u-AV-myA"/>
                     </connections>
                 </menuItem>
                 <menuItem title="仅开启socks端口" id="P4q-kj-6fs">
@@ -699,14 +705,8 @@
                         <action selector="chooseManualMode:" target="Voe-Tx-rLC" id="ELM-Qb-zRn"/>
                     </connections>
                 </menuItem>
-                <menuItem title="透明代理模式 (所有app走代理)" id="AVB-i7-JtJ">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="chooseTransMode:" target="Voe-Tx-rLC" id="H3u-AV-myA"/>
-                    </connections>
-                </menuItem>
                 <menuItem isSeparatorItem="YES" id="A8t-NG-v92"/>
-                <menuItem title="服务器订阅" id="lh0-nG-dZK">
+                <menuItem title="更新服务器配置" id="lh0-nG-dZK">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="loginToSpeedss:" target="Voe-Tx-rLC" id="2FX-BY-Yg4"/>
@@ -716,7 +716,7 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="切换服务器" id="eqU-gH-G4L"/>
                 </menuItem>
-                <menuItem title="配置" id="0hJ-Jo-rS2">
+                <menuItem title="设置" id="0hJ-Jo-rS2">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="showConfigWindow:" target="Voe-Tx-rLC" id="jVU-tA-mPz"/>

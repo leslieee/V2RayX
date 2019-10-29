@@ -40,6 +40,11 @@
 		[_emailTF setStringValue:subscribe];
 	}
 	[_emailTF becomeFirstResponder];
+    if (self.appDelegate.proxyState) {
+        // 先把系统代理关掉
+        [self.appDelegate setProxyState:NO];
+        [self.appDelegate configurationDidChange];
+    }
 }
 
 - (void)loginButtonClick {
@@ -48,6 +53,7 @@
 		[self showAlert:@"订阅地址不能为空额"];
 		return;
 	}
+    
 	// 发送请求
 	NSString *encodeUrlStr = [subscribe stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 	NSURL *url=[NSURL URLWithString:encodeUrlStr];
@@ -120,10 +126,10 @@
 				[weakSelf showAlert:@"自动获取配置并连接成功! "];
 				
 			});
-			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(4.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 				[weakSelf.window close];
-				[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://www.google.com"]];
-			});
+				// [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://www.google.com"]];
+            });
 		}
 	}];
 	[task resume];
