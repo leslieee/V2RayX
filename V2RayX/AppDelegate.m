@@ -614,6 +614,15 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
         ![fileManager fileExistsAtPath:kV2RayXTun2socks] ||
         ![fileManager fileExistsAtPath:kV2RayXRoute] ||
         ![self isSysconfVersionOK]) {
+        // 判断路径有没空格 否则退出
+        if ([[[NSBundle mainBundle] resourcePath] containsString:@" "]) {
+            NSAlert *installAlert = [[NSAlert alloc] init];
+            [installAlert addButtonWithTitle:@"退出"];
+            [installAlert setMessageText:@"检测到当前app名称或者路径包含空格, 请删除空格后再打开"];
+            if ([installAlert runModal] == NSAlertFirstButtonReturn) {
+                [[NSApplication sharedApplication] terminate:nil];
+            }
+        }
         NSAlert *installAlert = [[NSAlert alloc] init];
         [installAlert addButtonWithTitle:@"Install"];
         [installAlert addButtonWithTitle:@"Quit"];
