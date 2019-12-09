@@ -79,7 +79,10 @@ static AppDelegate *appDelegate;
     profiles = [[NSMutableArray alloc] init];
     [self readDefaults];
     if (proxyMode == trans) {
-        [self configurationDidChangeTransMode];
+        if (![self configurationDidChangeTransMode]) {
+            proxyMode = rules;
+            [self configurationDidChange];
+        }
     } else {
         [self configurationDidChange];
     }
@@ -123,9 +126,14 @@ static AppDelegate *appDelegate;
                                         if ([tmpArray[1] isEqualToString:@"240.0.0.1"]) {
                                             // 有可能触发两次通知 然后走到这里
                                             // errorStr = @"当前已设置过网关(说明已在此模式), 如果网络不正常 请在菜单中选择重置网络设置后再试";
-                                            break;
+                                            // break;
+                                            // 直接return;
+                                            return;
                                         } else {
                                             _gatewayIP = tmpArray[1];
+                                            // 获取成功则保存一下
+                                            [[NSUserDefaults standardUserDefaults] setObject:tmpArray[1] forKey:@"kGateway"];
+                                            [[NSUserDefaults standardUserDefaults] synchronize];
                                             break;
                                         }
                                     } else {
@@ -142,7 +150,12 @@ static AppDelegate *appDelegate;
                         errorStr = @"route命令没有返回信息, 请在菜单中选择重置网络设置后再试";
                     }
                 } else {
-                    errorStr = @"默认网关丢了.. 请把wifi关掉然后再开启后再试(有线的话拔掉网线在插入), 或者在菜单-重置网络中手动输入(如果你知道的话, 一般为路由器的管理页面地址), 如果不这样做你会一直在断网中..";
+                    NSString *gateway = [[NSUserDefaults standardUserDefaults] objectForKey:@"kGateway"];
+                    if (SWNOTEmptyStr(gateway) && [self isIPAddress:gateway] && ![gateway isEqualToString:@"240.0.0.1"]) {
+                        _gatewayIP = gateway;
+                    } else {
+                        errorStr = @"默认网关丢了.. 请把wifi关掉然后再开启后再试(有线的话拔掉网线在插入), 或者在菜单-重置网络中手动输入(如果你知道的话, 一般为路由器的管理页面地址), 如果不这样做你会一直在断网中..";
+                    }
                 }
                 if (SWNOTEmptyStr(errorStr) || !SWNOTEmptyStr(_gatewayIP)) {
                     NSAlert *installAlert = [[NSAlert alloc] init];
@@ -475,22 +488,38 @@ static AppDelegate *appDelegate;
 
 -(BOOL)loadTun2socks {
     [self generateLaunchdTun2socksPlist:plistTun2socksPath];
-    // dispatch_async(taskQueue, ^{
-        runCommandLine(@"/bin/launchctl",  @[@"load", plistTun2socksPath]);
-    // });
-    [self checkTun2socksRunStatus];
-    return YES;
+    // 有已经装载过的情况, 但是又没出现240的网关, 然后一直死循环
+    runCommandLine(@"/bin/launchctl",  @[@"unload", plistTun2socksPath]);
+    runCommandLine(@"/bin/launchctl",  @[@"load", plistTun2socksPath]);
+    if ([self checkTun2socksRunStatus:1]) {
+        return YES;
+    } else {
+        return NO;
+    }
+    
 }
 
--(void)checkTun2socksRunStatus {
+-(BOOL)checkTun2socksRunStatus:(NSInteger)index {
     NSLog(@"checkTun2socksRunStatus");
     NSString *output = [self runCommandLineWithReturn:@"/sbin/ifconfig" with:@[]];
     if (SWNOTEmptyStr(output) && [output containsString:@"240.0.0.1"]) {
         NSLog(@"checkTun2socksRunStatus_ok");
-        return;
+        return YES;
     } else {
+        if (index > 5) {
+            NSAlert *installAlert = [[NSAlert alloc] init];
+            [installAlert addButtonWithTitle:@"知道了"];
+            [installAlert setMessageText:@"tun2socks核心组件装载失败, 即将退回默认模式"];
+            [installAlert runModal];
+            return NO;
+        }
         [NSThread sleepForTimeInterval:0.5];
-        [self checkTun2socksRunStatus];
+        if ([self checkTun2socksRunStatus:index+1]) {
+            return YES;
+        } else {
+            return NO;
+        }
+        
     }
 }
 
@@ -687,6 +716,9 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
                                 break;
                             } else {
                                 _gatewayIP = tmpArray[1];
+                                // 获取成功则保存一下
+                                [[NSUserDefaults standardUserDefaults] setObject:tmpArray[1] forKey:@"kGateway"];
+                                [[NSUserDefaults standardUserDefaults] synchronize];
                                 break;
                             }
                         } else {
@@ -703,7 +735,12 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
             errorStr = @"route命令没有返回信息, 请在菜单中选择重置网络设置后再试";
         }
     } else {
-        errorStr = @"默认网关丢了.. 请把wifi关掉然后再开启后再试(有线的话拔掉网线在插入), 或者在菜单-重置网络中手动输入(如果你知道的话, 一般为路由器的管理页面地址), 如果不这样做你会一直在断网中..";
+        NSString *gateway = [[NSUserDefaults standardUserDefaults] objectForKey:@"kGateway"];
+        if (SWNOTEmptyStr(gateway) && [self isIPAddress:gateway] && ![gateway isEqualToString:@"240.0.0.1"]) {
+            _gatewayIP = gateway;
+        } else {
+            errorStr = @"默认网关丢了.. 请把wifi关掉然后再开启后再试(有线的话拔掉网线在插入), 或者在菜单-重置网络中手动输入(如果你知道的话, 一般为路由器的管理页面地址), 如果不这样做你会一直在断网中..";
+        }
     }
     if (SWNOTEmptyStr(errorStr) || !SWNOTEmptyStr(_gatewayIP)) {
         NSAlert *installAlert = [[NSAlert alloc] init];
@@ -745,6 +782,12 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
 }
 
 - (void)setSystemRoute {
+    if (!SWNOTEmptyStr(_gatewayIP)) {
+        NSString *gateway = [[NSUserDefaults standardUserDefaults] objectForKey:@"kGateway"];
+        if (SWNOTEmptyStr(gateway) && [self isIPAddress:gateway] && ![gateway isEqualToString:@"240.0.0.1"]) {
+            _gatewayIP = gateway;
+        }
+    }
     runCommandLine(kV2RayXRoute, @[@"delete", @"default"]);
     runCommandLine(kV2RayXRoute, @[@"add", @"default", @"240.0.0.1"]);
     runCommandLine(kV2RayXRoute, @[@"add", _serverIPStr, _gatewayIP]);
@@ -752,6 +795,12 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
 }
 
 - (void)unsetSystemRoute {
+    if (!SWNOTEmptyStr(_gatewayIP)) {
+        NSString *gateway = [[NSUserDefaults standardUserDefaults] objectForKey:@"kGateway"];
+        if (SWNOTEmptyStr(gateway) && [self isIPAddress:gateway] && ![gateway isEqualToString:@"240.0.0.1"]) {
+            _gatewayIP = gateway;
+        }
+    }
     runCommandLine(kV2RayXRoute, @[@"delete", @"default"]);
     runCommandLine(kV2RayXRoute, @[@"add", @"default", _gatewayIP]);
     runCommandLine(kV2RayXRoute, @[@"delete", _serverIPStr]);
@@ -764,24 +813,66 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
     return results.count > 0;
 }
 
-- (NSString*)getIPWithHostName:(const NSString*)hostName {
-    const char *hostN= [hostName UTF8String];
-    struct hostent* phot;
-    @try {
-        phot = gethostbyname(hostN);
-    } @catch (NSException *exception) {
-        return nil;
+- (NSString*)getIPWithHostName:(NSString *)hostName {
+    NSString *output = [self runCommandLineWithReturn:@"/usr/bin/dig" with:@[hostName,@"@223.5.5.5",@"+time=0",@"+short"]];
+    if ([output containsString:@"connection timed out"] || [output containsString:@"no servers could be reached"] || [output containsString:@"global options: +cmd"]) {
+        output = [self runCommandLineWithReturn:@"/usr/bin/dig" with:@[hostName,@"@114.114.114.114",@"+time=0",@"+short"]];
+        if ([output containsString:@"connection timed out"] || [output containsString:@"no servers could be reached"] || [output containsString:@"global options: +cmd"]) {
+            output = [self runCommandLineWithReturn:@"/usr/bin/dig" with:@[hostName,@"@180.76.76.76",@"+time=0",@"+short"]];
+            if ([output containsString:@"connection timed out"] || [output containsString:@"no servers could be reached"] || [output containsString:@"global options: +cmd"]) {
+                output = [self runCommandLineWithReturn:@"/usr/bin/dig" with:@[hostName,@"@8.8.8.8",@"+time=0",@"+short"]];
+                if ([output containsString:@"connection timed out"] || [output containsString:@"no servers could be reached"] || [output containsString:@"global options: +cmd"]) {
+                    // 实在没办法了
+                    // 系统的也获取不到那就返回假的
+                    const char *hostN= [hostName UTF8String];
+                    struct hostent* phot;
+                    @try {
+                        phot = gethostbyname(hostN);
+                    } @catch (NSException *exception) {
+                        NSString *ip = [[NSUserDefaults standardUserDefaults] objectForKey:hostName];
+                        if (SWNOTEmptyStr(ip) && [self isIPAddress:ip]) {
+                            return ip;
+                        } else {
+                            return @"69.171.229.73";
+                        }
+                    }
+                    struct in_addr ip_addr;
+                    if (phot == NULL) {
+                        NSLog(@"获取失败");
+                        NSString *ip = [[NSUserDefaults standardUserDefaults] objectForKey:hostName];
+                        if (SWNOTEmptyStr(ip) && [self isIPAddress:ip]) {
+                            return ip;
+                        } else {
+                            return @"69.171.229.73";
+                        }
+                    }
+                    memcpy(&ip_addr, phot->h_addr_list[0], 4);
+                    char ip[20] = {0}; inet_ntop(AF_INET, &ip_addr, ip, sizeof(ip));
+                    NSString * strIPAddress = [NSString stringWithUTF8String:ip];
+                    NSLog(@"ip=====%@",strIPAddress);
+                    [[NSUserDefaults standardUserDefaults] setObject:strIPAddress forKey:hostName];
+                    [[NSUserDefaults standardUserDefaults] synchronize];
+                    return strIPAddress;
+                }
+            }
+        }
     }
-    struct in_addr ip_addr;
-    if (phot == NULL) {
-        NSLog(@"获取失败");
-        return nil;
+    if (SWNOTEmptyStr(output)) {
+        NSArray *outputArray = [output componentsSeparatedByString:@"\n"];
+        if (SWNOTEmptyArr(outputArray)) {
+            if ([self isIPAddress:outputArray[0]]) {
+                [[NSUserDefaults standardUserDefaults] setObject:outputArray[0] forKey:hostName];
+                [[NSUserDefaults standardUserDefaults] synchronize];
+                return outputArray[0];
+            }
+        }
     }
-    memcpy(&ip_addr, phot->h_addr_list[0], 4);
-    char ip[20] = {0}; inet_ntop(AF_INET, &ip_addr, ip, sizeof(ip));
-    NSString* strIPAddress = [NSString stringWithUTF8String:ip];
-    NSLog(@"ip=====%@",strIPAddress);
-    return strIPAddress;
+    NSString *ip = [[NSUserDefaults standardUserDefaults] objectForKey:hostName];
+    if (SWNOTEmptyStr(ip) && [self isIPAddress:ip]) {
+        return ip;
+    } else {
+       return @"69.171.229.73";
+    }
 }
 
 - (BOOL)isSysconfVersionOK {
@@ -834,12 +925,14 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
     [self updateServerMenuList];
 }
 
--(void)configurationDidChangeTransMode {
+-(BOOL)configurationDidChangeTransMode {
     if (proxyState) {
         if (selectedServerIndex >= 0 && selectedServerIndex < [profiles count]) {
-            [self loadTun2socks];
+            if (![self loadTun2socks]) {
+                return NO;
+            }
             if (![self setSystemTransMode]) {
-                return;
+                return NO;
             }
             // 如果提前设置了 但是检测失败了 会影响切换其他模式
             proxyMode = trans;
@@ -861,6 +954,7 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
     [self updateSystemProxy];
     [self updateMenus];
     [self updateServerMenuList];
+    return YES;
 }
 
 - (IBAction)copyExportCmd:(id)sender {
