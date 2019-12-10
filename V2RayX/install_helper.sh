@@ -19,4 +19,8 @@ sudo cp "/sbin/route" "/Library/Application Support/V2RayX/"
 sudo chown root:admin "/Library/Application Support/V2RayX/route"
 sudo chmod +s "/Library/Application Support/V2RayX/route"
 
+sudo cp changedns "/Library/Application Support/V2RayX/"
+sudo chown root:admin "/Library/Application Support/V2RayX/changedns"
+sudo chmod +s "/Library/Application Support/V2RayX/changedns"
+
 echo done

@@ -613,6 +613,7 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
     if (![fileManager fileExistsAtPath:kV2RayXHelper] ||
         ![fileManager fileExistsAtPath:kV2RayXTun2socks] ||
         ![fileManager fileExistsAtPath:kV2RayXRoute] ||
+        ![fileManager fileExistsAtPath:kV2RayXChangedns] ||
         ![self isSysconfVersionOK]) {
         // 判断路径有没空格 否则退出
         if ([[[NSBundle mainBundle] resourcePath] containsString:@" "]) {
@@ -664,13 +665,7 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
             return NO;
         }
     }
-//    if (profile.port == 443) {
-//            NSAlert *installAlert = [[NSAlert alloc] init];
-//            [installAlert addButtonWithTitle:@"知道了"];
-//            [installAlert setMessageText:@"透明模式目前仅支持带80端口或跳板机字样的服务器, 请在菜单-切换服务器中重新选择"];
-//            [installAlert runModal];
-//            return NO;
-//    }
+    
     NSString *output = [self runCommandLineWithReturn:kV2RayXRoute with:@[@"-n",@"get",@"default"]];
     NSArray *array = [output componentsSeparatedByString:@"\n"];
     NSString *errorStr;
@@ -713,38 +708,12 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
         return NO;
     }
     
-    NSString *stdoutStrWifi = [self runCommandLineWithReturn:@"/usr/sbin/networksetup" with:@[@"-getdnsservers",@"Wi-Fi"]];
-    NSString *stdoutStrEthernet = [self runCommandLineWithReturn:@"/usr/sbin/networksetup" with:@[@"-getdnsservers",@"Ethernet"]];
-    if ([stdoutStrWifi containsString:@"8.8.8.8"] || [stdoutStrEthernet containsString:@"8.8.8.8"]) {
-        [self setSystemRoute];
-        return YES;
-    }
-    NSAlert *installAlert = [[NSAlert alloc] init];
-    [installAlert addButtonWithTitle:@"设置"];
-    [installAlert addButtonWithTitle:@"使用目前默认(有污染)"];
-    [installAlert setMessageText:@"透明模式需要设置系统dns为8.8.8.8, 以防止域名污染(使用目前默认 可能会打不开谷歌), 需要root权限. 关闭请前往系统偏好-网络-高级-dns, 将8.8.8.8删掉即可"];
-    if ([installAlert runModal] == NSAlertFirstButtonReturn) {
-        NSString *helperPath = [NSString stringWithFormat:@"%@/%@", [[NSBundle mainBundle] resourcePath], @"set_system_transmode.sh"];
-        NSDictionary *error;
-        NSString *script = [NSString stringWithFormat: @"do shell script \"bash %@\" with administrator privileges", helperPath];
-        NSAppleScript *appleScript = [[NSAppleScript new] initWithSource:script];
-        if ([appleScript executeAndReturnError:&error]) {
-            NSLog(@"dns set success");
-            // return YES;
-        } else {
-            NSLog(@"dns set failure");
-            // unknown failure
-            // return NO;
-        }
-    } else {
-        // stopped by user
-        // return NO;
-    }
     [self setSystemRoute];
     return YES;
 }
 
 - (void)setSystemRoute {
+    runCommandLine(kV2RayXChangedns, @[@"on", @"8.8.8.8"]);
     runCommandLine(kV2RayXRoute, @[@"delete", @"default"]);
     runCommandLine(kV2RayXRoute, @[@"add", @"default", @"240.0.0.1"]);
     runCommandLine(kV2RayXRoute, @[@"add", _serverIPStr, _gatewayIP]);
@@ -752,6 +721,7 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
 }
 
 - (void)unsetSystemRoute {
+    runCommandLine(kV2RayXChangedns, @[@"off"]);
     runCommandLine(kV2RayXRoute, @[@"delete", @"default"]);
     runCommandLine(kV2RayXRoute, @[@"add", @"default", _gatewayIP]);
     runCommandLine(kV2RayXRoute, @[@"delete", _serverIPStr]);

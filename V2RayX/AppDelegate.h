@@ -10,6 +10,7 @@
 #define kV2RayXHelper @"/Library/Application Support/V2RayX/v2rayx_sysconf"
 #define kV2RayXTun2socks @"/Library/Application Support/V2RayX/tun2socks"
 #define kV2RayXRoute @"/Library/Application Support/V2RayX/route"
+#define kV2RayXChangedns @"/Library/Application Support/V2RayX/changedns"
 #define kSysconfVersion @"v2rayx_sysconf 1.0.0"
 #define kV2RayXSettingVersion 4
 #define nilCoalescing(a,b) ( (a != nil) ? (a) : (b) ) // equivalent to ?? operator in Swift
