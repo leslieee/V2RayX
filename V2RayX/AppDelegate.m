@@ -784,14 +784,17 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
 }
 
 - (NSString*)getIPWithHostName:(NSString *)hostName {
+    if ([self isIPAddress:hostName]) {
+        return hostName;
+    }
     NSString *output = [self runCommandLineWithReturn:@"/usr/bin/dig" with:@[hostName,@"@223.5.5.5",@"+time=0",@"+short"]];
-    if ([output containsString:@"connection timed out"] || [output containsString:@"no servers could be reached"] || [output containsString:@"global options: +cmd"]) {
+    if (!SWNOTEmptyStr(output) || [output containsString:@"connection timed out"] || [output containsString:@"no servers could be reached"] || [output containsString:@"global options: +cmd"]) {
         output = [self runCommandLineWithReturn:@"/usr/bin/dig" with:@[hostName,@"@114.114.114.114",@"+time=0",@"+short"]];
-        if ([output containsString:@"connection timed out"] || [output containsString:@"no servers could be reached"] || [output containsString:@"global options: +cmd"]) {
+        if (!SWNOTEmptyStr(output) || [output containsString:@"connection timed out"] || [output containsString:@"no servers could be reached"] || [output containsString:@"global options: +cmd"]) {
             output = [self runCommandLineWithReturn:@"/usr/bin/dig" with:@[hostName,@"@180.76.76.76",@"+time=0",@"+short"]];
-            if ([output containsString:@"connection timed out"] || [output containsString:@"no servers could be reached"] || [output containsString:@"global options: +cmd"]) {
+            if (!SWNOTEmptyStr(output) || [output containsString:@"connection timed out"] || [output containsString:@"no servers could be reached"] || [output containsString:@"global options: +cmd"]) {
                 output = [self runCommandLineWithReturn:@"/usr/bin/dig" with:@[hostName,@"@8.8.8.8",@"+time=0",@"+short"]];
-                if ([output containsString:@"connection timed out"] || [output containsString:@"no servers could be reached"] || [output containsString:@"global options: +cmd"]) {
+                if (!SWNOTEmptyStr(output) || [output containsString:@"connection timed out"] || [output containsString:@"no servers could be reached"] || [output containsString:@"global options: +cmd"]) {
                     // 实在没办法了
                     // 系统的也获取不到那就返回假的
                     const char *hostN= [hostName UTF8String];
