@@ -293,6 +293,17 @@ static AppDelegate *appDelegate;
 	[loginWindowController.window makeKeyAndOrderFront:nil];
 }
 
+- (IBAction)blockAds:(id)sender {
+    BOOL dontBlockAds = [[NSUserDefaults standardUserDefaults] boolForKey:@"kDontBlockAds"];
+    [[NSUserDefaults standardUserDefaults] setBool:!dontBlockAds forKey:@"kDontBlockAds"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    if (proxyMode == trans) {
+        [self configurationDidChangeTransMode];
+    } else {
+        [self configurationDidChange];
+    }
+}
+
 - (void)updateMenus {
     if (proxyState) {
         [_v2rayStatusItem setTitle:@"V2Ray: On"];
@@ -309,7 +320,11 @@ static AppDelegate *appDelegate;
     [_v2rayRulesItem setState:proxyMode == rules];
     [_manualModeItem setState:proxyMode == manual];
     [_transModeItem setState:proxyMode == trans];
-    
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDontBlockAds"]) {
+        [_blockAdsItem setState:NO];
+    } else {
+        [_blockAdsItem setState:YES];
+    }
 }
 
 - (void)updateServerMenuList {
@@ -472,6 +487,14 @@ static AppDelegate *appDelegate;
                       @"outboundTag": @"vmess",
                       @"type": @"field",
                       }];
+        // 屏蔽所有广告
+        if (![[NSUserDefaults standardUserDefaults] boolForKey:@"kDontBlockAds"]) {
+            [fullConfig[@"routing"][@"settings"][@"rules"]
+             insertObject:@{ @"domain": @[@"geosite:category-ads-all"],
+                               @"outboundTag": @"blocked",
+                               @"type": @"field",
+                               } atIndex:0];
+        }
     } else if (proxyMode == manual) {
         fullConfig[@"routing"][@"settings"][@"rules"] = @[];
     }

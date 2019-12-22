@@ -71,6 +71,7 @@ typedef enum ProxyMode : NSInteger{
 - (IBAction)showConfigWindow:(id)sender;
 - (IBAction)viewLog:(id)sender;
 - (IBAction)loginToSpeedss:(id)sender;
+- (IBAction)blockAds:(id)sender;
 
 
 - (void)configurationDidChange;
@@ -85,6 +86,7 @@ typedef enum ProxyMode : NSInteger{
 @property (weak) IBOutlet NSMenuItem *transModeItem;
 @property (weak, nonatomic) IBOutlet NSMenuItem *serversItem;
 @property (weak, nonatomic) IBOutlet NSMenu *serverListMenu;
+@property (weak) IBOutlet NSMenuItem *blockAdsItem;
 
 @end
 

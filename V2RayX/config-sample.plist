@@ -128,6 +128,20 @@
 	<array>
 		<dict>
 			<key>protocol</key>
+			<string>blackhole</string>
+			<key>tag</key>
+			<string>blocked</string>
+			<key>settings</key>
+			<dict>
+				<key>response</key>
+				<dict>
+					<key>type</key>
+					<string>http</string>
+				</dict>
+			</dict>
+		</dict>
+		<dict>
+			<key>protocol</key>
 			<string>freedom</string>
 			<key>settings</key>
 			<dict/>
@@ -157,21 +171,7 @@
 				<dict>
 					<key>ip</key>
 					<array>
-						<string>0.0.0.0/8</string>
-						<string>10.0.0.0/8</string>
-						<string>100.64.0.0/10</string>
-						<string>127.0.0.0/8</string>
-						<string>169.254.0.0/16</string>
-						<string>172.16.0.0/12</string>
-						<string>192.0.0.0/24</string>
-						<string>192.0.2.0/24</string>
-						<string>192.168.0.0/16</string>
-						<string>198.18.0.0/15</string>
-						<string>198.51.100.0/24</string>
-						<string>203.0.113.0/24</string>
-						<string>::1/128</string>
-						<string>fc00::/7</string>
-						<string>fe80::/10</string>
+						<string>geoip:private</string>
 					</array>
 					<key>outboundTag</key>
 					<string>direct</string>
