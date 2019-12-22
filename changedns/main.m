@@ -78,8 +78,10 @@ int main (int argc, const char * argv[])
                 }
                 //create new values
                 CFMutableDictionaryRef newdnskey = CFDictionaryCreateMutableCopy(NULL,0,dnskey);
-                CFStringRef domain = (__bridge CFStringRef)[dict objectForKey:@"DomainName"];
-                CFDictionarySetValue(newdnskey,CFSTR("DomainName"),domain);
+                if (SWNOTEmptyStr(dict[@"DomainName"])) {
+                    CFStringRef domain = (__bridge CFStringRef)dict[@"DomainName"];
+                    CFDictionarySetValue(newdnskey,CFSTR("DomainName"),domain);
+                }
                 
                 CFMutableArrayRef dnsserveraddresses = CFArrayCreateMutable(NULL,0,NULL);
                 CFStringRef str = (__bridge CFStringRef)ip;
@@ -100,8 +102,10 @@ int main (int argc, const char * argv[])
                 if (SWNOTEmptyDictionary(dict)) {
                     //create new values
                     CFMutableDictionaryRef newdnskey = CFDictionaryCreateMutableCopy(NULL,0,dnskey);
-                    CFStringRef domain = (__bridge CFStringRef)[dict objectForKey:@"DomainName"];
-                    CFDictionarySetValue(newdnskey,CFSTR("DomainName"),domain);
+                    if (SWNOTEmptyStr(dict[@"DomainName"])) {
+                        CFStringRef domain = (__bridge CFStringRef)dict[@"DomainName"];
+                        CFDictionarySetValue(newdnskey,CFSTR("DomainName"),domain);
+                    }
                     
                     CFMutableArrayRef dnsserveraddresses = CFArrayCreateMutable(NULL,0,NULL);
                     for (NSString *str in dict[@"ServerAddresses"]) {

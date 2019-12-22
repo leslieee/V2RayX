@@ -786,7 +786,17 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
             _gatewayIP = gateway;
         }
     }
-    runCommandLine(kV2RayXChangedns, @[@"on", @"8.8.8.8"]);
+    // 开关wifi时系统获取dns有时延 比系统晚一点再设置
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        runCommandLine(kV2RayXChangedns, @[@"on", @"8.8.8.8"]);
+    });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        runCommandLine(kV2RayXChangedns, @[@"on", @"8.8.8.8"]);
+    });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(15 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        runCommandLine(kV2RayXChangedns, @[@"on", @"8.8.8.8"]);
+    });
+    
     runCommandLine(kV2RayXRoute, @[@"delete", @"default"]);
     runCommandLine(kV2RayXRoute, @[@"add", @"default", @"240.0.0.1"]);
     runCommandLine(kV2RayXRoute, @[@"add", _serverIPStr, _gatewayIP]);

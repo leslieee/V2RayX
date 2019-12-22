@@ -29,10 +29,9 @@
 		CE04245E200A6CA600CD2590 /* v2rayx_sysconf in Resources */ = {isa = PBXBuildFile; fileRef = CE04245D200A6CA600CD2590 /* v2rayx_sysconf */; };
 		CE042462200AAE6700CD2590 /* LoginWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE042460200AAE6700CD2590 /* LoginWindowController.m */; };
 		CE042463200AAE6700CD2590 /* LoginWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE042461200AAE6700CD2590 /* LoginWindowController.xib */; };
+		CE08219623A0EB6E001D967E /* changedns in Resources */ = {isa = PBXBuildFile; fileRef = CE08219523A0EB6E001D967E /* changedns */; };
 		CE163ABA239FD5A7001DD3FB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CE163AB9239FD5A7001DD3FB /* main.m */; };
-		CE163AD123A00957001DD3FB /* changedns in Resources */ = {isa = PBXBuildFile; fileRef = CE163AD023A00957001DD3FB /* changedns */; };
 		CE189A1321848F370015A956 /* tun2socks in Resources */ = {isa = PBXBuildFile; fileRef = CE189A1221848F370015A956 /* tun2socks */; };
-		CE5B93242184AC2100840739 /* set_system_transmode.sh in Resources */ = {isa = PBXBuildFile; fileRef = CE5B93232184A8EF00840739 /* set_system_transmode.sh */; };
 		CE5B93252185636300840739 /* compilefromsource.sh in Resources */ = {isa = PBXBuildFile; fileRef = 95862BD41DB2862E00F4A9CA /* compilefromsource.sh */; };
 		CE5B93292185B80C00840739 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5B93282185B80C00840739 /* Reachability.m */; };
 		CE5B932B2185B87B00840739 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE5B932A2185B87B00840739 /* SystemConfiguration.framework */; };
@@ -103,11 +102,10 @@
 		CE04245F200AAE6700CD2590 /* LoginWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LoginWindowController.h; sourceTree = "<group>"; };
 		CE042460200AAE6700CD2590 /* LoginWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LoginWindowController.m; sourceTree = "<group>"; };
 		CE042461200AAE6700CD2590 /* LoginWindowController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LoginWindowController.xib; sourceTree = "<group>"; };
+		CE08219523A0EB6E001D967E /* changedns */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = changedns; sourceTree = "<group>"; };
 		CE163AB7239FD5A7001DD3FB /* changedns */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = changedns; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE163AB9239FD5A7001DD3FB /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		CE163AD023A00957001DD3FB /* changedns */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = changedns; sourceTree = "<group>"; };
 		CE189A1221848F370015A956 /* tun2socks */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = tun2socks; sourceTree = "<group>"; };
-		CE5B93232184A8EF00840739 /* set_system_transmode.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = set_system_transmode.sh; sourceTree = "<group>"; };
 		CE5B93272185B80C00840739 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		CE5B93282185B80C00840739 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		CE5B932A2185B87B00840739 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -155,9 +153,9 @@
 			isa = PBXGroup;
 			children = (
 				9504C07A1C662C3000352520 /* V2RayX */,
-				CE163AB8239FD5A7001DD3FB /* changedns */,
 				95FCB2451C688BB20081B6FD /* Frameworks */,
 				9D7DFE521EBEC947001FECBD /* jsonplist */,
+				CE163AB8239FD5A7001DD3FB /* changedns */,
 				9504C0C71C662DB500352520 /* v2rayx_sysconf */,
 				9504C0791C662C3000352520 /* Products */,
 			);
@@ -204,9 +202,8 @@
 				95E524CA1C674CC80008BB12 /* simple.pac */,
 				CE189A1221848F370015A956 /* tun2socks */,
 				CE04245D200A6CA600CD2590 /* v2rayx_sysconf */,
-				CE163AD023A00957001DD3FB /* changedns */,
+				CE08219523A0EB6E001D967E /* changedns */,
 				9504C0D01C662E0800352520 /* install_helper.sh */,
-				CE5B93232184A8EF00840739 /* set_system_transmode.sh */,
 				953B60551DB3F65A00D40654 /* dlcore.sh */,
 				95862BD41DB2862E00F4A9CA /* compilefromsource.sh */,
 				9D5EAC111FDCD54F00C14B46 /* v2ray-core */,
@@ -391,8 +388,8 @@
 			projectRoot = "";
 			targets = (
 				9504C0771C662C3000352520 /* V2RayX */,
-				9504C0C51C662DB400352520 /* v2rayx_sysconf */,
 				9D7DFE501EBEC947001FECBD /* jsonplist */,
+				9504C0C51C662DB400352520 /* v2rayx_sysconf */,
 				CE163AB6239FD5A7001DD3FB /* changedns */,
 			);
 		};
@@ -403,7 +400,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE5B93242184AC2100840739 /* set_system_transmode.sh in Resources */,
+				CE08219623A0EB6E001D967E /* changedns in Resources */,
 				9D5EAC151FDCD70300C14B46 /* geoip.dat in Resources */,
 				9D5EAC161FDCD70300C14B46 /* geosite.dat in Resources */,
 				9D5EAC181FDCD70300C14B46 /* v2ray in Resources */,
@@ -412,7 +409,6 @@
 				CE5B93252185636300840739 /* compilefromsource.sh in Resources */,
 				CE04245E200A6CA600CD2590 /* v2rayx_sysconf in Resources */,
 				9504C0D11C66373400352520 /* install_helper.sh in Resources */,
-				CE163AD123A00957001DD3FB /* changedns in Resources */,
 				9504C0821C662C3000352520 /* Assets.xcassets in Resources */,
 				9D7109611E0F43BD008A6362 /* Credits.rtf in Resources */,
 				9504C0851C662C3000352520 /* MainMenu.xib in Resources */,
