@@ -465,6 +465,13 @@ static AppDelegate *appDelegate;
                       @"outboundTag": @"direct",
                       @"type": @"field",
                      }];
+        
+        // 防止本地dns解析境外域名没有响应
+        [fullConfig[@"routing"][@"settings"][@"rules"]
+         addObject:@{ @"domain": @[@"geosite:geolocation-!cn"],
+                      @"outboundTag": @"vmess",
+                      @"type": @"field",
+                      }];
     } else if (proxyMode == manual) {
         fullConfig[@"routing"][@"settings"][@"rules"] = @[];
     }
