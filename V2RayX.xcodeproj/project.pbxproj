@@ -17,7 +17,6 @@
 		9504C0C91C662DB500352520 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9504C0C81C662DB500352520 /* main.m */; };
 		9504C0D11C66373400352520 /* install_helper.sh in Resources */ = {isa = PBXBuildFile; fileRef = 9504C0D01C662E0800352520 /* install_helper.sh */; };
 		9504C0D41C66511B00352520 /* ServerProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 9504C0D31C66511B00352520 /* ServerProfile.m */; };
-		950F82321D9C01820066CB3A /* config-sample-rules.plist in Resources */ = {isa = PBXBuildFile; fileRef = 950F82311D9C01820066CB3A /* config-sample-rules.plist */; };
 		9565E28B1DB25C010082658C /* transportWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9565E28A1DB25C010082658C /* transportWindow.xib */; };
 		95A143CC1C87FCDC008756B9 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95A143CA1C87FC6E008756B9 /* Cocoa.framework */; };
 		95E524CB1C674CC80008BB12 /* simple.pac in Resources */ = {isa = PBXBuildFile; fileRef = 95E524CA1C674CC80008BB12 /* simple.pac */; };
@@ -88,7 +87,6 @@
 		9504C0D01C662E0800352520 /* install_helper.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = install_helper.sh; sourceTree = "<group>"; };
 		9504C0D21C66511B00352520 /* ServerProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerProfile.h; sourceTree = "<group>"; };
 		9504C0D31C66511B00352520 /* ServerProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ServerProfile.m; sourceTree = "<group>"; };
-		950F82311D9C01820066CB3A /* config-sample-rules.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "config-sample-rules.plist"; sourceTree = "<group>"; };
 		953B60551DB3F65A00D40654 /* dlcore.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = dlcore.sh; sourceTree = "<group>"; };
 		953B60571DB3F6B700D40654 /* v2ray */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = v2ray; path = "../v2ray-core-bin/v2ray"; sourceTree = "<group>"; };
 		9565E28A1DB25C010082658C /* transportWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = transportWindow.xib; sourceTree = "<group>"; };
@@ -202,7 +200,6 @@
 		9504C07E1C662C3000352520 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				950F82311D9C01820066CB3A /* config-sample-rules.plist */,
 				9DB4FE941F205BEB00CCEE5F /* config-sample.plist */,
 				95E524CA1C674CC80008BB12 /* simple.pac */,
 				CE189A1221848F370015A956 /* tun2socks */,
@@ -294,7 +291,6 @@
 				9504C0741C662C3000352520 /* Sources */,
 				9504C0751C662C3000352520 /* Frameworks */,
 				9504C0761C662C3000352520 /* Resources */,
-				953B60541DB3E31D00D40654 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -412,7 +408,6 @@
 				9D5EAC161FDCD70300C14B46 /* geosite.dat in Resources */,
 				9D5EAC181FDCD70300C14B46 /* v2ray in Resources */,
 				9DB4FE951F205BEB00CCEE5F /* config-sample.plist in Resources */,
-				950F82321D9C01820066CB3A /* config-sample-rules.plist in Resources */,
 				95E524CB1C674CC80008BB12 /* simple.pac in Resources */,
 				CE5B93252185636300840739 /* compilefromsource.sh in Resources */,
 				CE04245E200A6CA600CD2590 /* v2rayx_sysconf in Resources */,
@@ -430,22 +425,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		953B60541DB3E31D00D40654 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = $SRCROOT/V2RayX/dlcore.sh;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		9504C0741C662C3000352520 /* Sources */ = {
