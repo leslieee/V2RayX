@@ -673,6 +673,7 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
         ![fileManager fileExistsAtPath:kV2RayXTun2socks] ||
         ![fileManager fileExistsAtPath:kV2RayXRoute] ||
         ![fileManager fileExistsAtPath:kV2RayXChangedns] ||
+        ![fileManager fileExistsAtPath:kV2RayXChangedns1] ||
         ![self isSysconfVersionOK]) {
         // 判断路径有没空格 否则退出
         if ([[[NSBundle mainBundle] resourcePath] containsString:@" "]) {
@@ -786,17 +787,9 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
             _gatewayIP = gateway;
         }
     }
-    // 开关wifi时系统获取dns有时延 比系统晚一点再设置
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        runCommandLine(kV2RayXChangedns, @[@"on", @"8.8.8.8"]);
-    });
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        runCommandLine(kV2RayXChangedns, @[@"on", @"8.8.8.8"]);
-    });
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(15 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        runCommandLine(kV2RayXChangedns, @[@"on", @"8.8.8.8"]);
-    });
-    
+    // 修改系统dns
+    runCommandLine(kV2RayXChangedns1, @[@"on"]);
+
     runCommandLine(kV2RayXRoute, @[@"delete", @"default"]);
     runCommandLine(kV2RayXRoute, @[@"add", @"default", @"240.0.0.1"]);
     runCommandLine(kV2RayXRoute, @[@"add", _serverIPStr, _gatewayIP]);
@@ -810,7 +803,7 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
             _gatewayIP = gateway;
         }
     }
-    runCommandLine(kV2RayXChangedns, @[@"off"]);
+    runCommandLine(kV2RayXChangedns1, @[@"off"]);
     runCommandLine(kV2RayXRoute, @[@"delete", @"default"]);
     runCommandLine(kV2RayXRoute, @[@"add", @"default", _gatewayIP]);
     runCommandLine(kV2RayXRoute, @[@"delete", _serverIPStr]);

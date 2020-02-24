@@ -23,4 +23,8 @@ sudo cp changedns "/Library/Application Support/V2RayX/"
 sudo chown root:admin "/Library/Application Support/V2RayX/changedns"
 sudo chmod +s "/Library/Application Support/V2RayX/changedns"
 
+sudo cp changedns1 "/Library/Application Support/V2RayX/"
+sudo chown root:admin "/Library/Application Support/V2RayX/changedns1"
+sudo chmod +s "/Library/Application Support/V2RayX/changedns1"
+
 echo done

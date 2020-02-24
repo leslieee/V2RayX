@@ -35,6 +35,7 @@
 		CE5B93252185636300840739 /* compilefromsource.sh in Resources */ = {isa = PBXBuildFile; fileRef = 95862BD41DB2862E00F4A9CA /* compilefromsource.sh */; };
 		CE5B93292185B80C00840739 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = CE5B93282185B80C00840739 /* Reachability.m */; };
 		CE5B932B2185B87B00840739 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE5B932A2185B87B00840739 /* SystemConfiguration.framework */; };
+		CE60F5872403E4F500691DD2 /* changedns1 in Resources */ = {isa = PBXBuildFile; fileRef = CE60F5862403E4F500691DD2 /* changedns1 */; };
 		CE7AA0BC200B5A8F00ECF0F4 /* NSDictionary+Json.m in Sources */ = {isa = PBXBuildFile; fileRef = CE7AA0BA200B5A8F00ECF0F4 /* NSDictionary+Json.m */; };
 		CE7AA0BE200B7C4100ECF0F4 /* v2ctl in Resources */ = {isa = PBXBuildFile; fileRef = CE7AA0BD200B7C4100ECF0F4 /* v2ctl */; };
 /* End PBXBuildFile section */
@@ -109,6 +110,7 @@
 		CE5B93272185B80C00840739 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		CE5B93282185B80C00840739 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		CE5B932A2185B87B00840739 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		CE60F5862403E4F500691DD2 /* changedns1 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = changedns1; sourceTree = "<group>"; };
 		CE7AA0BA200B5A8F00ECF0F4 /* NSDictionary+Json.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+Json.m"; sourceTree = "<group>"; };
 		CE7AA0BB200B5A8F00ECF0F4 /* NSDictionary+Json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+Json.h"; sourceTree = "<group>"; };
 		CE7AA0BD200B7C4100ECF0F4 /* v2ctl */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = v2ctl; path = "../v2ray-core-bin/v2ctl"; sourceTree = "<group>"; };
@@ -203,6 +205,7 @@
 				CE189A1221848F370015A956 /* tun2socks */,
 				CE04245D200A6CA600CD2590 /* v2rayx_sysconf */,
 				CE08219523A0EB6E001D967E /* changedns */,
+				CE60F5862403E4F500691DD2 /* changedns1 */,
 				9504C0D01C662E0800352520 /* install_helper.sh */,
 				953B60551DB3F65A00D40654 /* dlcore.sh */,
 				95862BD41DB2862E00F4A9CA /* compilefromsource.sh */,
@@ -402,6 +405,7 @@
 			files = (
 				CE08219623A0EB6E001D967E /* changedns in Resources */,
 				9D5EAC151FDCD70300C14B46 /* geoip.dat in Resources */,
+				CE60F5872403E4F500691DD2 /* changedns1 in Resources */,
 				9D5EAC161FDCD70300C14B46 /* geosite.dat in Resources */,
 				9D5EAC181FDCD70300C14B46 /* v2ray in Resources */,
 				9DB4FE951F205BEB00CCEE5F /* config-sample.plist in Resources */,
