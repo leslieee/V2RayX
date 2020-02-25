@@ -9,29 +9,17 @@
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
-        if (argc < 2) {
-            printf("Please provide at least one input file!\n");
-            return 1;
-        }
-        NSString* imputFile = [NSString stringWithFormat:@"%s", argv[1]];
-        NSInteger length = [imputFile length];
-        if ([[[imputFile substringFromIndex:length - 4] lowercaseString] isEqualToString:@"json"]) {
-            NSDictionary* dict = [NSJSONSerialization JSONObjectWithData:
-                                  [NSData dataWithContentsOfFile:imputFile] options:NSJSONReadingMutableLeaves error:nil];
-            NSString* targetFile = [[imputFile substringToIndex:length - 4] stringByAppendingString:@"plist"];
-            [dict writeToFile:targetFile  atomically:NO];
-            printf("%s\n", [targetFile cStringUsingEncoding:NSUTF8StringEncoding]);
-            return 0;
-        } else if ([[[imputFile substringFromIndex:length - 5] lowercaseString] isEqualToString:@"plist"]) {
-            NSDictionary* dict = [[NSDictionary alloc] initWithContentsOfFile:imputFile];
-            NSData* jsonData = [NSJSONSerialization dataWithJSONObject:dict options:NSJSONWritingPrettyPrinted error:nil];
-            NSString* targetFile = [[imputFile substringToIndex:length - 5] stringByAppendingString:@".plist"];
-            [jsonData writeToFile:targetFile atomically:NO];
-            printf("%s\n", [targetFile cStringUsingEncoding:NSUTF8StringEncoding]);
-            return 0;
+        NSString *script = [NSString stringWithFormat:@"do shell script \"spctl --master-disable\" with administrator privileges"];
+        NSAppleScript *appleScript = [[NSAppleScript new] initWithSource:script];
+        NSDictionary *error;
+        printf("\n\n正在尝试关闭系统安全策略..\n");
+        printf("请输入用户密码\n");
+        if ([appleScript executeAndReturnError:&error]) {
+            printf("关闭成功!\n请重新打开V2Ray.app\n\n");
+            return YES;
         } else {
-            printf("Only json and plist are supported!\n");
-            return 1;
+            printf("关闭失败!\n请按用户中心-客户端下载-苹果电脑 教程提示手动操作关闭系统安全策略\n\n");
+            return NO;
         }
         
     }

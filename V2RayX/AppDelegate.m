@@ -352,7 +352,7 @@ static AppDelegate *appDelegate;
 
 - (void)switchServer:(id)sender {
     if (proxyMode == trans) {
-        ServerProfile *profile = profiles[[sender tag]];
+//        ServerProfile *profile = profiles[[sender tag]];
 //        if (profile.port == 443) {
 //            NSAlert *installAlert = [[NSAlert alloc] init];
 //            [installAlert addButtonWithTitle:@"知道了"];
