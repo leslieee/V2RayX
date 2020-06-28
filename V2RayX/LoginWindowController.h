@@ -12,5 +12,6 @@
 @interface LoginWindowController : NSWindowController
 
 @property AppDelegate* appDelegate;
+@property (assign, nonatomic)  BOOL update;
 
 @end

@@ -42,8 +42,11 @@
 		[_emailTF setStringValue:subscribe];
 	}
 	[_emailTF becomeFirstResponder];
+    
+    if (_update) {
+        [self loginButtonClick];
+    }
 }
-
 
 - (void)loginButtonClick {
     NSString *subscribe = [_emailTF stringValue];
@@ -60,7 +63,10 @@
     // 发送请求
     NSString *encodeUrlStr = [array[index] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSURL *url=[NSURL URLWithString:encodeUrlStr];
-    NSURLSession *session=[NSURLSession sharedSession];
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+    configuration.connectionProxyDictionary = [NSDictionary new];
+    configuration.timeoutIntervalForRequest = 10;
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration];
     __weak typeof(self) weakSelf = self;
     [_progressIndicator startAnimation:self];
     NSURLSessionDataTask * task = [session dataTaskWithURL:url completionHandler:^(NSData * _Nullable data,NSURLResponse * _Nullable response, NSError * _Nullable error) {
@@ -68,7 +74,7 @@
             [weakSelf.progressIndicator stopAnimation:weakSelf];
         });
         if (error != nil) {
-            [weakSelf showAlert:error.localizedDescription];
+            [weakSelf showBadAlert:@"更新服务器配置失败了\n\n1.请确保网络正常, app能连接外网\n2.请从网站获取最新订阅地址(现在这个可能已经被墙了)"];
             return;
         }
         id jsonDic = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
@@ -137,6 +143,8 @@
     [userdefault setBool:YES forKey:@"is_login"];
     // 保存用户名密码
     [userdefault setObject:[_emailTF stringValue] forKey:@"subscribe"];
+    // 保存上一次获取配置时间
+    [userdefault setInteger:(NSInteger)[[NSDate date] timeIntervalSince1970] forKey:@"loginTime"];
     
     [userdefault synchronize];
     NSLog(@"Settings saved.");
@@ -154,7 +162,18 @@
     });
 }
 
+- (void)showBadAlert:(NSString *)info {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [noServerAlert setMessageText:info];
+        [noServerAlert runModal];
+    });
+}
+
 - (void)showAlert:(NSString *)info {
+    // 更新的话不显示任何东西
+    if (_update) {
+        return;
+    }
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[noServerAlert setMessageText:info];
 		[noServerAlert runModal];

@@ -79,10 +79,13 @@ static AppDelegate *appDelegate;
     profiles = [[NSMutableArray alloc] init];
     [self readDefaults];
     if (proxyMode == trans) {
-        if (![self configurationDidChangeTransMode]) {
-            proxyMode = rules;
-            [self configurationDidChange];
-        }
+        // if (![self configurationDidChangeTransMode]) {
+        //    proxyMode = rules;
+        //    [self configurationDidChange];
+        // }
+        // 全局模式重启不保留 用户环境的不确定性因素太多
+        proxyMode = rules;
+        [self configurationDidChange];
     } else {
         [self configurationDidChange];
     }
@@ -94,7 +97,19 @@ static AppDelegate *appDelegate;
 		[loginWindowController showWindow:self];
 		[NSApp activateIgnoringOtherApps:YES];
 		[loginWindowController.window makeKeyAndOrderFront:nil];
-	}
+    } else {
+        // 判断更新订阅
+        NSInteger loginTime = [[NSUserDefaults standardUserDefaults] integerForKey:@"loginTime"];
+        NSInteger currentTime = (NSInteger)[[NSDate date] timeIntervalSince1970];
+        if ((currentTime - loginTime) > 60*60*24*3) {
+            loginWindowController =[[LoginWindowController alloc] initWithWindowNibName:@"LoginWindowController"];
+            loginWindowController.appDelegate = self;
+            loginWindowController.update = true;
+            [loginWindowController showWindow:self];
+            [NSApp activateIgnoringOtherApps:YES];
+            [loginWindowController.window makeKeyAndOrderFront:nil];
+        }
+    }
     
     appDelegate = self;
     
@@ -374,23 +389,6 @@ static AppDelegate *appDelegate;
 }
 
 - (void)readDefaults {
-    NSDictionary *defaultsDic = [self readDefaultsAsDictionary];
-    NSLog(@"read def array");
-    proxyState = [defaultsDic[@"proxyState"] boolValue];
-    proxyMode = [defaultsDic[@"proxyMode"] integerValue];
-    localPort = [defaultsDic[@"localPort"] integerValue];
-    httpPort = [defaultsDic[@"httpPort"] integerValue];
-    udpSupport = [defaultsDic[@"udpSupport"] integerValue];
-    shareOverLan = [defaultsDic[@"shareOverLan"] boolValue];
-    [profiles removeAllObjects];
-    profiles = defaultsDic[@"profiles"];
-    dnsString = defaultsDic[@"dnsString"];
-    logLevel = defaultsDic[@"logLevel"];
-    selectedServerIndex = [defaultsDic[@"selectedServerIndex"] integerValue];
-    NSLog(@"read %ld profiles, selected No.%ld", [profiles count] , selectedServerIndex);
-}
-
-- (NSDictionary*)readDefaultsAsDictionary {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *dLogLevel = nilCoalescing([defaults objectForKey:@"logLevel"], @"none");
     NSNumber *dProxyState = nilCoalescing([defaults objectForKey:@"proxyState"], [NSNumber numberWithBool:NO]); //turn off proxy as default
@@ -417,7 +415,7 @@ static AppDelegate *appDelegate;
     } else {
         dServerIndex = [NSNumber numberWithInteger:-1];
     }
-    return @{@"proxyState": dProxyState,
+    NSDictionary *defaultsDic = @{@"proxyState": dProxyState,
              @"logLevel": dLogLevel,
              @"proxyMode": dMode,
              @"localPort": dLocalPort,
@@ -427,8 +425,21 @@ static AppDelegate *appDelegate;
              @"profiles": dProfiles,
              @"selectedServerIndex": dServerIndex,
              @"dnsString":dDnsString};
+    
+    NSLog(@"read def array");
+    proxyState = [defaultsDic[@"proxyState"] boolValue];
+    proxyMode = [defaultsDic[@"proxyMode"] integerValue];
+    localPort = [defaultsDic[@"localPort"] integerValue];
+    httpPort = [defaultsDic[@"httpPort"] integerValue];
+    udpSupport = [defaultsDic[@"udpSupport"] integerValue];
+    shareOverLan = [defaultsDic[@"shareOverLan"] boolValue];
+    [profiles removeAllObjects];
+    profiles = defaultsDic[@"profiles"];
+    dnsString = defaultsDic[@"dnsString"];
+    logLevel = defaultsDic[@"logLevel"];
+    selectedServerIndex = [defaultsDic[@"selectedServerIndex"] integerValue];
+    NSLog(@"read %ld profiles, selected No.%ld", [profiles count] , selectedServerIndex);
 }
-
 
 -(void)unloadV2ray {
     dispatch_async(taskQueue, ^{
@@ -918,12 +929,8 @@ void runCommandLine(NSString* launchPath, NSArray* arguments) {
         if (selectedServerIndex >= 0 && selectedServerIndex < [profiles count]) {
             [self loadV2ray];
         } else {
-            proxyState = NO;
-            //[[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithBool:NO] forKey:@"proxyState"];
-            NSAlert *noServerAlert = [[NSAlert alloc] init];
-            [noServerAlert setMessageText:@"No available Server Profiles!"];
-            [noServerAlert runModal];
-            NSLog(@"V2Ray core loaded failed: no avalibale servers.");
+            selectedServerIndex = 0;
+            [self loadV2ray];
         }
     }
     [self updateSystemProxy];
